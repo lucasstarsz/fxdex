@@ -7,9 +7,12 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import static io.github.lucasstarsz.fxdex.App.DexThreadHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
+import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 
 public class DexViewModel {
@@ -31,19 +34,26 @@ public class DexViewModel {
                 .GET()
                 .build();
 
-        for (int i = 2; i <= 2; i++) {
-            var r = HttpRequest.newBuilder(request, (n, v) -> true)
-                    .uri(new URI(dexUrl + i + "/"))
-                    .build();
+        var r = HttpRequest.newBuilder(request, (n, v) -> true)
+                .uri(new URI(dexUrl + 2 + "/"))
+                .build();
 
-            var response = client.send(r, HttpResponse.BodyHandlers.ofString());
+        var response = client.send(r, HttpResponse.BodyHandlers.ofString());
+        if (response != null) {
+            System.out.println(response.body());
 
-            if (response != null) {
-                System.out.println(response.body());
-                System.out.println(dexContainer.getChildren());
-                dexContainer.getChildren().add(new Label(response.body()));
-                System.out.println(dexContainer.getChildren());
-            }
+            JSONObject dexes = new JSONObject(response.body());
+
+            JSONArray dexEntries = dexes.getJSONArray("pokemon_entries");
+            dexEntries.forEach((entry) -> {
+                System.out.println(entry.toString());
+                int pokedexNumber = ((JSONObject) entry).getInt("entry_number");
+                JSONObject pokemon = ((JSONObject) entry).getJSONObject("pokemon_species");
+                Button pokemonButton = new Button(pokedexNumber + ": " + pokemon.getString("name"));
+                pokemonButton.onMousePressedProperty().set((event) -> System.out.println("Send to pokedex " + pokedexNumber));
+
+                dexContainer.getChildren().add(pokemonButton);
+            });
         }
     }
 }
