@@ -29,9 +29,7 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
     }
-}
 
-java {
     modularity.inferModulePath.set(true)
 }
 
@@ -39,7 +37,6 @@ application {
     mainModule.set("fxdex.main")
     mainClass.set("io.github.lucasstarsz.fxdex.App")
 }
-
 
 tasks.named<Test>("test") {
     // Use JUnit Platform for unit tests.
