@@ -16,7 +16,7 @@
                </items>
             </Menu>
          </menus></MenuBar>
-      <ScrollPane hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
+      <ScrollPane prefHeight="200.0" prefWidth="200.0" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
          <content>
             <VBox fx:id="pokemonInfoContainer" />
          </content>

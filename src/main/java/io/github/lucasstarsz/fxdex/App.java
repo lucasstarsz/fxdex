@@ -6,6 +6,7 @@ import java.util.concurrent.ExecutorService;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
+import atlantafx.base.theme.PrimerDark;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
@@ -38,10 +39,13 @@ public class App extends Application {
             }
         });
 
+        Application.setUserAgentStylesheet(new PrimerDark().getUserAgentStylesheet());
+
         this.primaryStage = stage;
 
         Scene scene = new Scene(DefaultParent, 640, 480);
         stage.setScene(scene);
+        scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
 
         CurrentScene.set("main.fxml");
 
