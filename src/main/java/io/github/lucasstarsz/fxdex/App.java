@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -15,7 +18,10 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
+        final Injector injector = Guice.createInjector(new DexModule());
         FXMLLoader mainFXML = new FXMLLoader(getClass().getResource("main.fxml"));
+        mainFXML.setControllerFactory(injector::getInstance);
+
         Scene scene = new Scene(mainFXML.load(), 640, 480);
         stage.setScene(scene);
         stage.show();

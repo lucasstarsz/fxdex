@@ -8,4 +8,6 @@ open module fxdex.main {
     requires javafx.fxml;
 
     requires org.json;
+    requires com.google.guice;
+    requires jakarta.inject;
 }

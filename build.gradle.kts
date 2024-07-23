@@ -14,8 +14,10 @@ repositories {
 }
 
 dependencies {
-    // Use JUnit Jupiter for testing.
     implementation("org.json:json:20240303")
+    implementation("com.google.inject:guice:7.0.0")
+    implementation("jakarta.inject:jakarta.inject-api:2.0.1")
+
     testImplementation(libs.junit.jupiter)
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
