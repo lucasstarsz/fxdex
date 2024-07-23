@@ -13,6 +13,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.layout.HBox;
@@ -51,5 +52,10 @@ public class DexEntryViewModel {
             pokemonInfoContainer.getChildren().setAll(currentDexEntries);
         });
         dexService.loadDexEntry(pokemonInfoContainer, currentDexEntryNameProperty.get());
+    }
+
+    @FXML
+    public void backToPokedex(ActionEvent actionEvent) {
+        App.CurrentScene.set("main.fxml");
     }
 }

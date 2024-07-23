@@ -7,7 +7,7 @@
 
 <VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.github.lucasstarsz.fxdex.vmodel.DexViewModel">
    <children>
-      <MenuBar fx:id="menuBar" nodeOrientation="RIGHT_TO_LEFT" VBox.vgrow="ALWAYS">
+      <MenuBar fx:id="menuBar" nodeOrientation="LEFT_TO_RIGHT" VBox.vgrow="ALWAYS">
         <menus>
           <Menu fx:id="dexMenu" mnemonicParsing="false" text="Pokedex" />
         </menus>
