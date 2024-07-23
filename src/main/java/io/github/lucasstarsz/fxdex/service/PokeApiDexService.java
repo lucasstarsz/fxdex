@@ -35,7 +35,8 @@ public class PokeApiDexService implements DexService {
     }
 
     @Override
-    public void loadPokedexesForMenu(ObservableList<Label> currentDex, Menu dexMenu) throws URISyntaxException, IOException, InterruptedException {
+    public void loadPokedexesForMenu(ObservableList<Label> currentDex, Menu dexMenu)
+            throws URISyntaxException, IOException, InterruptedException {
         HttpRequest dexesRequest = httpService.getDefaultDexRequest();
 
         var dexesResponse = httpService.getString(dexesRequest);
@@ -90,7 +91,8 @@ public class PokeApiDexService implements DexService {
     }
 
     @Override
-    public void loadDefaultPokedex(ObservableList<Label> currentDex, Menu dexMenu) throws IOException, InterruptedException, URISyntaxException {
+    public void loadDefaultPokedex(ObservableList<Label> currentDex, Menu dexMenu)
+            throws IOException, InterruptedException, URISyntaxException {
         var defaultDex = httpService.buildDexRequest(2);
         var response = httpService.getString(defaultDex);
 
@@ -103,7 +105,8 @@ public class PokeApiDexService implements DexService {
     }
 
     @Override
-    public void loadDexEntry(VBox pokemonInfoContainer, String currentDexEntry) throws IOException, InterruptedException, URISyntaxException {
+    public void loadDexEntry(VBox pokemonInfoContainer, String currentDexEntry)
+            throws IOException, InterruptedException, URISyntaxException {
         HttpRequest dexEntryRequest = httpService.buildDexEntryRequest(currentDexEntry);
         var response = httpService.getString(dexEntryRequest);
 
@@ -122,7 +125,6 @@ public class PokeApiDexService implements DexService {
             }
 
             String generationIntroducedIn = IntroducedIn + dexEntry.getJSONObject("generation").getString("name");
-            String habitat = Habitat + dexEntry.getJSONObject("habitat").getString("name");
 
             List<String> eggGroups = new ArrayList<>();
             JSONArray eggGroupJSON = dexEntry.getJSONArray("egg_groups");
@@ -147,13 +149,13 @@ public class PokeApiDexService implements DexService {
             Label pokemonName = new Label(currentDexEntry);
             Label pokemonGenus = new Label(genus);
             Label introduced = new Label(generationIntroducedIn);
-            Label pokemonHabitat = new Label(habitat);
             Label pokemonEggGroups = new Label("Egg groups: " + String.join(", ", eggGroups));
             Label pokemonFlavorTexts = new Label("Pokedex Entries:");
 
             VBox flavorTextsContainer = new VBox();
             List<Label> flavorTextList = flavorTexts.entrySet().stream()
-                    .map((entry) -> entry.getKey() + ": " + entry.getValue().replaceAll("\n", " ").replaceAll("\u000c", " "))
+                    .map((entry) -> entry.getKey() + ": "
+                            + entry.getValue().replaceAll("\n", " ").replaceAll("\u000c", " "))
                     .map((text) -> new Label(text))
                     .toList();
 
@@ -164,11 +166,9 @@ public class PokeApiDexService implements DexService {
                     pokemonName,
                     pokemonGenus,
                     introduced,
-                    pokemonHabitat,
                     pokemonEggGroups,
                     pokemonFlavorTexts,
-                    flavorTextsContainer
-            );
+                    flavorTextsContainer);
         }
     }
 }
