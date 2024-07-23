@@ -14,7 +14,7 @@
       </MenuBar>
       <ScrollPane hbarPolicy="NEVER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" pannable="true" prefHeight="400.0" prefWidth="600.0" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
          <content>
-            <VBox fx:id="dexContainer" maxWidth="1.7976931348623157E308" nodeOrientation="LEFT_TO_RIGHT" prefHeight="200.0" prefWidth="100.0" />
+            <VBox fx:id="dexContainer" nodeOrientation="LEFT_TO_RIGHT" />
          </content>
       </ScrollPane>
    </children>

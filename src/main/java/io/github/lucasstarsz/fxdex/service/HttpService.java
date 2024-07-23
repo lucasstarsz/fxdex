@@ -15,4 +15,6 @@ public interface HttpService {
     HttpRequest buildDexRequest(int dexId) throws URISyntaxException;
 
     HttpResponse<String> getString(HttpRequest request) throws IOException, InterruptedException;
+
+    public HttpRequest buildDexEntryRequest(String currentDexEntry) throws URISyntaxException;
 }

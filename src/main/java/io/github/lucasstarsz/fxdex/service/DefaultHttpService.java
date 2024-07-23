@@ -12,6 +12,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
 import static io.github.lucasstarsz.fxdex.ApiLinks.AllDexesUrl;
+import static io.github.lucasstarsz.fxdex.ApiLinks.DexEntryUrl;
 import static io.github.lucasstarsz.fxdex.ApiLinks.DexUrl;
 import io.github.lucasstarsz.fxdex.App;
 
@@ -56,5 +57,12 @@ public class DefaultHttpService implements HttpService {
     @Override
     public HttpResponse<String> getString(HttpRequest request) throws IOException, InterruptedException {
         return client.send(request, HttpResponse.BodyHandlers.ofString());
+    }
+
+    @Override
+    public HttpRequest buildDexEntryRequest(String dexEntry) throws URISyntaxException {
+        return HttpRequest.newBuilder(dexesRequest, (n, v) -> true)
+                .uri(new URI(DexEntryUrl + dexEntry + "/"))
+                .build();
     }
 }
