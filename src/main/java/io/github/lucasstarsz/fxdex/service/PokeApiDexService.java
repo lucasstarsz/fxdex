@@ -1,18 +1,14 @@
 package io.github.lucasstarsz.fxdex.service;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.google.inject.Inject;
 
-import static io.github.lucasstarsz.fxdex.ApiLinks.DexUrl;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
@@ -30,11 +26,9 @@ public class PokeApiDexService implements DexService {
 
     @Override
     public void loadPokedexesForMenu(ObservableList<Label> currentDex, Menu dexMenu) throws URISyntaxException, IOException, InterruptedException {
-        HttpClient client = httpService.getClient();
         HttpRequest dexesRequest = httpService.getDefaultDexRequest();
 
-        var dexesResponse = client.send(dexesRequest, HttpResponse.BodyHandlers.ofString());
-
+        var dexesResponse = httpService.getString(dexesRequest);
         if (dexesResponse == null) {
             MenuItem noDexesAvailable = new MenuItem("No Pokedexes loaded.");
             dexMenu.getItems().add(noDexesAvailable);
@@ -48,10 +42,12 @@ public class PokeApiDexService implements DexService {
         for (int i = 1; i <= dexCount; i++) {
             var dexRequest = httpService.buildDexRequest(i);
 
-            MenuItem dexItem = new MenuItem(allDexes.getJSONArray("results").getJSONObject(i - 1).getString("name"));
+            String pokedexName = allDexes.getJSONArray("results").getJSONObject(i - 1).getString("name");
+            MenuItem dexItem = new MenuItem(pokedexName);
+
             dexItem.onActionProperty().set((event) -> {
                 try {
-                    var dexResponse = client.send(dexRequest, HttpResponse.BodyHandlers.ofString());
+                    var dexResponse = httpService.getString(dexRequest);
                     if (dexResponse != null) {
                         JSONObject dexes = new JSONObject(dexResponse.body());
                         JSONArray dexEntries = dexes.getJSONArray("pokemon_entries");
@@ -73,22 +69,17 @@ public class PokeApiDexService implements DexService {
         int pokedexNumber = entry.getInt("entry_number");
         JSONObject pokemon = entry.getJSONObject("pokemon_species");
 
-        Label pokemonButton = new Label(pokedexNumber + ": " + pokemon.getString("name"));
-        pokemonButton.onMousePressedProperty().set((event) -> System.out.println("Send to pokedex " + pokedexNumber));
+        Label pokemonLabel = new Label(pokedexNumber + ": " + pokemon.getString("name"));
+        pokemonLabel.onMousePressedProperty().set((event) -> System.out.println("Send to pokedex " + pokedexNumber));
 
-        currentDex.add(pokemonButton);
+        currentDex.add(pokemonLabel);
     }
 
     @Override
     public void loadDefaultPokedex(ObservableList<Label> currentDex, Menu dexMenu) throws IOException, InterruptedException, URISyntaxException {
-        HttpClient client = httpService.getClient();
-        HttpRequest dexesRequest = httpService.getDefaultDexRequest();
+        var defaultDex = httpService.buildDexRequest(2);
+        var response = httpService.getString(defaultDex);
 
-        var defaultDex = HttpRequest.newBuilder(dexesRequest, (n, v) -> true)
-                .uri(new URI(DexUrl + 2 + "/"))
-                .build();
-
-        var response = client.send(defaultDex, HttpResponse.BodyHandlers.ofString());
         if (response != null) {
             JSONObject dexes = new JSONObject(response.body());
             JSONArray dexEntries = dexes.getJSONArray("pokemon_entries");

@@ -2,19 +2,20 @@ package io.github.lucasstarsz.fxdex;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
 import javafx.application.Application;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class App extends Application {
 
-    public static final ExecutorService DexThreadHandler = Executors.newFixedThreadPool(4);
+    public static final Property<ExecutorService> DexThreadHandler = new SimpleObjectProperty<>();
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -29,7 +30,10 @@ public class App extends Application {
 
     @Override
     public void stop() {
-        DexThreadHandler.shutdown();
+        ExecutorService dexThreadHandler = DexThreadHandler.getValue();
+        if (dexThreadHandler != null) {
+            dexThreadHandler.shutdown();
+        }
     }
 
     public static void main(String[] args) {

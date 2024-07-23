@@ -37,9 +37,8 @@ public class DexViewModel {
     public void initialize() throws IOException, URISyntaxException, InterruptedException {
         currentDex = FXCollections.observableArrayList();
         dexProperty = new SimpleListProperty(currentDex);
-        dexProperty.addListener((change, o, n) -> {
-            dexContainer.getChildren().setAll(currentDex);
-        });
+
+        dexProperty.addListener((c, o, n) -> dexContainer.getChildren().setAll(currentDex));
 
         dexService.loadPokedexesForMenu(currentDex, dexMenu);
         dexService.loadDefaultPokedex(currentDex, dexMenu);
