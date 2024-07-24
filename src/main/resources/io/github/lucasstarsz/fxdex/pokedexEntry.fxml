@@ -15,10 +15,14 @@
                   <MenuItem fx:id="backButton" mnemonicParsing="false" onAction="#backToPokedex" text="Back to Pokedex" />
                </items>
             </Menu>
-         </menus></MenuBar>
+         </menus>
+      </MenuBar>
       <ScrollPane fitToWidth="true" prefHeight="200.0" prefWidth="200.0" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
          <content>
-            <VBox fx:id="pokemonInfoContainer" spacing="4.0" />
+            <VBox fx:id="pokemonInfoContainer" spacing="4.0">
+               <children>
+               </children>
+            </VBox>
          </content>
       </ScrollPane>
    </children>

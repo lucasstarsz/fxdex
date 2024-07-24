@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.HBox?>
@@ -10,24 +10,26 @@
 
 <VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.github.lucasstarsz.fxdex.vmodel.DexViewModel">
    <children>
-      <HBox>
+      <HBox alignment="CENTER_LEFT">
          <children>
-            <MenuBar focusTraversable="false">
-              <menus>
-                  <Menu fx:id="currentDexDisplayed" mnemonicParsing="false" text="No Pokedex Selected" />
-              </menus>
-            </MenuBar>
+            <Label id="dexDisplayed" fx:id="currentDexDisplayed" alignment="BOTTOM_LEFT" text="No Pokedex Selected" />
             <Region HBox.hgrow="SOMETIMES" />
             <MenuButton fx:id="dexMenu" alignment="CENTER_RIGHT" mnemonicParsing="false" text="Select Pokedex">
               <items>
               </items>
             </MenuButton>
          </children>
+         <VBox.margin>
+            <Insets left="10.0" />
+         </VBox.margin>
       </HBox>
-      <ScrollPane hbarPolicy="NEVER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" pannable="true" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
+      <ScrollPane hbarPolicy="NEVER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minViewportHeight="90.0" minViewportWidth="160.0" minWidth="-Infinity" pannable="true" prefViewportHeight="90.0" prefViewportWidth="160.0" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
          <content>
             <VBox fx:id="dexContainer" nodeOrientation="LEFT_TO_RIGHT" />
          </content>
+         <VBox.margin>
+            <Insets top="3.0" />
+         </VBox.margin>
       </ScrollPane>
    </children>
 </VBox>

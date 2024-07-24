@@ -10,6 +10,10 @@
     -fx-padding: 4pt 10pt;
 }
 
+#dexDisplayed {
+    -fx-font-weight: bold;
+}
+
 #pokemon-name {
     -fx-font: bold 24pt "Helvetica";
     -fx-end-margin: 12pt;
