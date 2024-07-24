@@ -170,7 +170,21 @@ public class PokeApiDexService implements DexService {
             Label introduced = new Label(generationIntroducedIn);
             introduced.setId(StyleClass.Subtitle);
 
-            Label pokemonEggGroups = new Label("Egg groups: " + String.join(", ", eggGroups));
+            HBox eggGroupContainer = new HBox(5);
+            Label pokemonEggGroups = new Label("Egg groups:");
+            pokemonEggGroups.setMinWidth(75);
+            eggGroupContainer.getChildren().add(pokemonEggGroups);
+
+            for (int i = 0; i < eggGroups.size(); i++) {
+                String eggGroupString = eggGroups.get(i);
+                if (i < eggGroups.size() - 1) {
+                    eggGroupString += ",";
+                }
+
+                Label eggGroupLabel = new Label(eggGroupString);
+                eggGroupLabel.setWrapText(false);
+                eggGroupContainer.getChildren().add(eggGroupLabel);
+            }
 
             Label pokemonFlavorTexts = new Label("Pokedex Entries:");
             pokemonFlavorTexts.setId(StyleClass.Subtitle);
@@ -204,7 +218,7 @@ public class PokeApiDexService implements DexService {
                     pokemonName,
                     pokemonGenus,
                     introduced,
-                    pokemonEggGroups,
+                    eggGroupContainer,
                     pokemonFlavorTexts,
                     flavorTextsContainer);
         }
