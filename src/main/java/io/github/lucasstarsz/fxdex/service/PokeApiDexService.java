@@ -29,17 +29,18 @@ import com.google.inject.Inject;
 
 import io.github.lucasstarsz.fxdex.App;
 import io.github.lucasstarsz.fxdex.StyleClass;
-import javafx.application.Platform;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.StringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 
 public class PokeApiDexService implements DexService {
 
@@ -58,7 +59,8 @@ public class PokeApiDexService implements DexService {
     }
 
     @Override
-    public void loadPokedexesForMenu(ListProperty<Label> currentDex, MenuButton dexMenu, StringProperty currentDexDisplayedProperty)
+    public void loadPokedexesForMenu(ListProperty<Label> currentDex, MenuButton dexMenu,
+            StringProperty currentDexDisplayedProperty)
             throws URISyntaxException, IOException, InterruptedException {
         HttpRequest dexesRequest = httpService.getDefaultDexRequest();
 
@@ -83,7 +85,8 @@ public class PokeApiDexService implements DexService {
         }
     }
 
-    private void loadPokedexList(ListProperty<Label> currentDex, int pokedexIndex, StringProperty currentDexDisplayedProperty) {
+    private void loadPokedexList(ListProperty<Label> currentDex, int pokedexIndex,
+            StringProperty currentDexDisplayedProperty) {
         try {
             var dexRequest = httpService.buildDexRequest(pokedexIndex);
             var dexResponse = httpService.getString(dexRequest);
@@ -101,8 +104,12 @@ public class PokeApiDexService implements DexService {
                 currentDexDisplayedProperty.set("Pokedex: " + dexInfo.getString("name"));
             }
         } catch (IOException | InterruptedException | URISyntaxException ex) {
-            // TODO: add error reporting for end user
-            Platform.exit();
+            Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+            errorAlert.initModality(Modality.APPLICATION_MODAL);
+            errorAlert.setResizable(true);
+            errorAlert.setHeaderText("Unable to open Pokedex");
+            errorAlert.setContentText(ex.getLocalizedMessage());
+            errorAlert.showAndWait();
         }
     }
 
