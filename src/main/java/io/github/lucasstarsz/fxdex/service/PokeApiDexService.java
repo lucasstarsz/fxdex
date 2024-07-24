@@ -17,7 +17,6 @@ import io.github.lucasstarsz.fxdex.App;
 import io.github.lucasstarsz.fxdex.StyleClass;
 import javafx.application.Platform;
 import javafx.beans.property.ListProperty;
-import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -42,7 +41,7 @@ public class PokeApiDexService implements DexService {
     }
 
     @Override
-    public void loadPokedexesForMenu(ObservableList<Label> currentDex, Menu dexMenu)
+    public void loadPokedexesForMenu(ListProperty<Label> currentDex, Menu dexMenu)
             throws URISyntaxException, IOException, InterruptedException {
         HttpRequest dexesRequest = httpService.getDefaultDexRequest();
 
@@ -83,7 +82,7 @@ public class PokeApiDexService implements DexService {
     }
 
     @Override
-    public void parseJSONIntoPokedex(ObservableList<Label> currentDex, JSONObject entry) {
+    public void parseJSONIntoPokedex(ListProperty<Label> currentDex, JSONObject entry) {
         int pokedexNumber = entry.getInt("entry_number");
         JSONObject pokemon = entry.getJSONObject("pokemon_species");
         String pokemonName = pokemon.getString("name");
@@ -98,7 +97,7 @@ public class PokeApiDexService implements DexService {
     }
 
     @Override
-    public void loadDefaultPokedex(ObservableList<Label> currentDex, Menu dexMenu)
+    public void loadDefaultPokedex(ListProperty<Label> currentDex, Menu dexMenu)
             throws IOException, InterruptedException, URISyntaxException {
         var defaultDex = httpService.buildDexRequest(2);
         var response = httpService.getString(defaultDex);
