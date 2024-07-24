@@ -1,3 +1,31 @@
 .root {
-    -fx-font: 16px "Helvetica";
+    -fx-font: 12pt "Helvetica";
+}
+
+.label {
+    -fx-wrap-text: true;
+}
+
+.scroll-pane {
+    -fx-padding: 4pt 10pt;
+}
+
+#pokemon-name {
+    -fx-font: bold 24pt "Helvetica";
+    -fx-end-margin: 12pt;
+}
+
+#title {
+    -fx-font-size: 16pt;
+    -fx-end-margin: 8pt;
+}
+
+#subtitle {
+    -fx-font-size: 14pt;
+    -fx-end-margin: 8pt;
+}
+
+#subtext {
+    -fx-font-size: 10pt;
+    -fx-end-margin: 2pt;
 }

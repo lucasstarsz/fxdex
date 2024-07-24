@@ -5,18 +5,22 @@ import java.net.URISyntaxException;
 
 import org.json.JSONObject;
 
+import javafx.beans.property.ListProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.Region;
 
 public interface DexService {
 
-    void loadPokedexesForMenu(ObservableList<Label> currentDex, Menu dexMenu) throws URISyntaxException, IOException, InterruptedException;
+    void loadPokedexesForMenu(ObservableList<Label> currentDex, Menu dexMenu)
+            throws URISyntaxException, IOException, InterruptedException;
 
     void parseJSONIntoPokedex(ObservableList<Label> currentDex, JSONObject entry);
 
-    void loadDefaultPokedex(ObservableList<Label> currentDex, Menu dexMenu) throws IOException, InterruptedException, URISyntaxException;
+    void loadDefaultPokedex(ObservableList<Label> currentDex, Menu dexMenu)
+            throws IOException, InterruptedException, URISyntaxException;
 
-    public void loadDexEntry(VBox pokemonInfoContainer, String currentDexEntry) throws IOException, InterruptedException, URISyntaxException;
+    public void loadDexEntry(ListProperty<Region> dexEntriesProperty, String currentDexEntry)
+            throws IOException, InterruptedException, URISyntaxException;
 }

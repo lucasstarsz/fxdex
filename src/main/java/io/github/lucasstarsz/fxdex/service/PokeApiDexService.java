@@ -14,11 +14,17 @@ import org.json.JSONObject;
 import com.google.inject.Inject;
 
 import io.github.lucasstarsz.fxdex.App;
+import io.github.lucasstarsz.fxdex.StyleClass;
 import javafx.application.Platform;
+import javafx.beans.property.ListProperty;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 public class PokeApiDexService implements DexService {
@@ -26,6 +32,7 @@ public class PokeApiDexService implements DexService {
     public static final String IntroducedIn = "Introduced in: ";
     public static final String Habitat = "Lives in: ";
     public static final String EggGroup = "Egg groups: ";
+    private static final Insets InfoInsets = new Insets(0, 0, 5, 0);
 
     private final HttpService httpService;
 
@@ -105,7 +112,7 @@ public class PokeApiDexService implements DexService {
     }
 
     @Override
-    public void loadDexEntry(VBox pokemonInfoContainer, String currentDexEntry)
+    public void loadDexEntry(ListProperty<Region> dexEntriesProperty, String currentDexEntry)
             throws IOException, InterruptedException, URISyntaxException {
         HttpRequest dexEntryRequest = httpService.buildDexEntryRequest(currentDexEntry);
         var response = httpService.getString(dexEntryRequest);
@@ -113,7 +120,6 @@ public class PokeApiDexService implements DexService {
         if (response != null) {
             JSONObject dexEntry = new JSONObject(response.body());
 
-            // pokemon genus
             String genus = "Genus not found";
             JSONArray genuses = dexEntry.getJSONArray("genera");
             for (int i = 0; i < genuses.length(); i++) {
@@ -147,22 +153,46 @@ public class PokeApiDexService implements DexService {
             }
 
             Label pokemonName = new Label(currentDexEntry);
+            pokemonName.setId(StyleClass.PokemonName);
+            pokemonName.setText(pokemonName.getText().toUpperCase());
+
             Label pokemonGenus = new Label(genus);
+            pokemonGenus.setId(StyleClass.Subtitle);
+
             Label introduced = new Label(generationIntroducedIn);
+            introduced.setId(StyleClass.Subtitle);
+
             Label pokemonEggGroups = new Label("Egg groups: " + String.join(", ", eggGroups));
+
             Label pokemonFlavorTexts = new Label("Pokedex Entries:");
+            pokemonFlavorTexts.setId(StyleClass.Subtitle);
 
             VBox flavorTextsContainer = new VBox();
-            List<Label> flavorTextList = flavorTexts.entrySet().stream()
-                    .map((entry) -> entry.getKey() + ": "
-                            + entry.getValue().replaceAll("\n", " ").replaceAll("\u000c", " "))
-                    .map((text) -> new Label(text))
-                    .toList();
+            List<HBox> flavorTextList = flavorTexts.entrySet().stream()
+                    .map((entry) -> {
+                        HBox container = new HBox(5);
+                        Label gameName = new Label(entry.getKey() + ": ");
+                        Label flavorText = new Label(entry.getValue().replaceAll("(\n|\u000c)", " "));
 
-            flavorTextList.forEach((l) -> l.setWrapText(true));
+                        gameName.setMinWidth(100);
+                        gameName.setWrapText(false);
+                        gameName.setAlignment(Pos.CENTER_RIGHT);
+                        flavorText.setWrapText(true);
+
+                        container.getChildren().addAll(gameName, flavorText);
+                        container.setMinWidth(container.getWidth());
+
+                        return container;
+                    }).toList();
+
+            flavorTextList.forEach((l) -> {
+                l.setId(StyleClass.Subtext);
+                VBox.setMargin(l, InfoInsets);
+            });
+
             flavorTextsContainer.getChildren().addAll(flavorTextList);
 
-            pokemonInfoContainer.getChildren().addAll(
+            dexEntriesProperty.setAll(
                     pokemonName,
                     pokemonGenus,
                     introduced,

@@ -14,6 +14,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -30,6 +31,7 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
+        Application.setUserAgentStylesheet(new PrimerDark().getUserAgentStylesheet());
         CurrentScene.addListener((c, o, n) -> {
             try {
                 switchSceneInfo(n);
@@ -39,16 +41,12 @@ public class App extends Application {
             }
         });
 
-        Application.setUserAgentStylesheet(new PrimerDark().getUserAgentStylesheet());
-
         this.primaryStage = stage;
 
         Scene scene = new Scene(DefaultParent, 640, 480);
         stage.setScene(scene);
-        scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
 
         CurrentScene.set("main.fxml");
-
         stage.show();
     }
 
@@ -63,11 +61,23 @@ public class App extends Application {
     }
 
     private void switchSceneInfo(String fxml) throws IOException {
-        final Injector injector = Guice.createInjector(new DexModule());
         FXMLLoader mainFXML = new FXMLLoader(getClass().getResource(fxml));
+
+        Injector injector = Guice.createInjector(new DexModule());
         mainFXML.setControllerFactory(injector::getInstance);
 
-        primaryStage.getScene().setRoot(mainFXML.load());
+        Scene scene = primaryStage.getScene();
+        Parent rootNode = mainFXML.load();
+        scene.setRoot(rootNode);
+
+        reloadStylesheets();
+    }
+
+    private void reloadStylesheets() {
+        Scene scene = primaryStage.getScene();
+
+        scene.getStylesheets().clear();
+        scene.getStylesheets().add(App.class.getResource("style.css").toExternalForm());
     }
 
     public static void main(String[] args) {
