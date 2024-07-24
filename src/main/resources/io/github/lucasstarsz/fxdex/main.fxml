@@ -2,17 +2,29 @@
 
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
 <VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.github.lucasstarsz.fxdex.vmodel.DexViewModel">
    <children>
-      <MenuBar fx:id="menuBar" nodeOrientation="LEFT_TO_RIGHT" VBox.vgrow="ALWAYS">
-        <menus>
-          <Menu fx:id="dexMenu" mnemonicParsing="false" text="Pokedex" />
-        </menus>
-      </MenuBar>
-      <ScrollPane hbarPolicy="NEVER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" pannable="true" prefHeight="400.0" prefWidth="600.0" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
+      <HBox>
+         <children>
+            <MenuBar focusTraversable="false">
+              <menus>
+                  <Menu fx:id="currentDexDisplayed" mnemonicParsing="false" text="No Pokedex Selected" />
+              </menus>
+            </MenuBar>
+            <Region HBox.hgrow="SOMETIMES" />
+            <MenuButton fx:id="dexMenu" alignment="CENTER_RIGHT" mnemonicParsing="false" text="Select Pokedex">
+              <items>
+              </items>
+            </MenuButton>
+         </children>
+      </HBox>
+      <ScrollPane hbarPolicy="NEVER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" pannable="true" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS">
          <content>
             <VBox fx:id="dexContainer" nodeOrientation="LEFT_TO_RIGHT" />
          </content>

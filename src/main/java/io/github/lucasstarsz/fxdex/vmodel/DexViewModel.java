@@ -11,7 +11,7 @@ import javafx.beans.property.SimpleListProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
+import javafx.scene.control.MenuButton;
 import javafx.scene.layout.VBox;
 
 public class DexViewModel {
@@ -20,7 +20,7 @@ public class DexViewModel {
     private VBox dexContainer;
 
     @FXML
-    private Menu dexMenu;
+    private MenuButton dexMenu;
 
     private final ListProperty<Label> dexProperty;
     private final DexService dexService;
@@ -36,6 +36,6 @@ public class DexViewModel {
         dexProperty.addListener((c, o, n) -> dexContainer.getChildren().setAll(dexProperty.get()));
 
         dexService.loadPokedexesForMenu(dexProperty, dexMenu);
-        dexService.loadDefaultPokedex(dexProperty, dexMenu);
+        dexService.loadDefaultPokedex(dexProperty);
     }
 }

@@ -20,7 +20,7 @@ import javafx.beans.property.ListProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
+import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
@@ -43,7 +43,7 @@ public class PokeApiDexService implements DexService {
     }
 
     @Override
-    public void loadPokedexesForMenu(ListProperty<Label> currentDex, Menu dexMenu)
+    public void loadPokedexesForMenu(ListProperty<Label> currentDex, MenuButton dexMenu)
             throws URISyntaxException, IOException, InterruptedException {
         HttpRequest dexesRequest = httpService.getDefaultDexRequest();
 
@@ -106,7 +106,7 @@ public class PokeApiDexService implements DexService {
     }
 
     @Override
-    public void loadDefaultPokedex(ListProperty<Label> currentDex, Menu dexMenu)
+    public void loadDefaultPokedex(ListProperty<Label> currentDex)
             throws IOException, InterruptedException, URISyntaxException {
         var defaultDex = httpService.buildDexRequest(2);
         var response = httpService.getString(defaultDex);
