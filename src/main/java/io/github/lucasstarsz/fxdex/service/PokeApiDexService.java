@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -74,13 +75,21 @@ public class PokeApiDexService implements DexService {
         int dexCount = allDexes.getInt("count");
 
         for (int i = 0; i < dexCount; i++) {
-            // PokeApi's pokedex list starts at index 1
-            int pokedexIndex = i + 1;
-
             String pokedexName = allDexes.getJSONArray("results").getJSONObject(i).getString("name");
             MenuItem dexItem = new MenuItem(pokedexName);
 
-            dexItem.onActionProperty().set((event) -> this.loadPokedexList(currentDex, pokedexIndex, currentDexDisplayedProperty));
+            // PokeApi's pokedex list starts at index 1
+            AtomicInteger pokedexIndex = new AtomicInteger(i + 1);
+
+            // at index nine of the PokeAPI JSON, the dex number increases its offset by 1
+            // https://pokeapi.co/api/v2/pokedex/?offset=0&limit=32
+            if (i >= 9) {
+                pokedexIndex.set(pokedexIndex.get() + 1);
+            }
+
+            dexItem.onActionProperty()
+                    .set((event) -> this.loadPokedexList(currentDex, pokedexIndex.get(), currentDexDisplayedProperty));
+
             dexMenu.getItems().add(dexItem);
         }
     }
