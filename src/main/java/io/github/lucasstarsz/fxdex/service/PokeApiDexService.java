@@ -31,6 +31,8 @@ public class PokeApiDexService implements DexService {
     public static final String IntroducedIn = "Introduced in: ";
     public static final String Habitat = "Lives in: ";
     public static final String EggGroup = "Egg groups: ";
+
+    private static final MenuItem NoDexesAvailable = new MenuItem("No Pokedexes loaded.");
     private static final Insets InfoInsets = new Insets(0, 0, 5, 0);
 
     private final HttpService httpService;
@@ -47,37 +49,44 @@ public class PokeApiDexService implements DexService {
 
         var dexesResponse = httpService.getString(dexesRequest);
         if (dexesResponse == null) {
-            MenuItem noDexesAvailable = new MenuItem("No Pokedexes loaded.");
-            dexMenu.getItems().add(noDexesAvailable);
-
+            dexMenu.getItems().add(NoDexesAvailable);
             return;
         }
 
         JSONObject allDexes = new JSONObject(dexesResponse.body());
         int dexCount = allDexes.getInt("count");
 
-        for (int i = 1; i <= dexCount; i++) {
-            var dexRequest = httpService.buildDexRequest(i);
+        for (int i = 0; i < dexCount; i++) {
+            // PokeApi's pokedex list starts at index 1
+            int pokedexIndex = i + 1;
 
-            String pokedexName = allDexes.getJSONArray("results").getJSONObject(i - 1).getString("name");
+            String pokedexName = allDexes.getJSONArray("results").getJSONObject(i).getString("name");
             MenuItem dexItem = new MenuItem(pokedexName);
 
-            dexItem.onActionProperty().set((event) -> {
-                try {
-                    var dexResponse = httpService.getString(dexRequest);
-                    if (dexResponse != null) {
-                        JSONObject dexes = new JSONObject(dexResponse.body());
-                        JSONArray dexEntries = dexes.getJSONArray("pokemon_entries");
-
-                        currentDex.clear();
-                        dexEntries.forEach((entry) -> parseJSONIntoPokedex(currentDex, (JSONObject) entry));
-                    }
-                } catch (IOException | InterruptedException ex) {
-                    Platform.exit();
-                }
-            });
-
+            dexItem.onActionProperty().set((event) -> this.loadPokedexList(currentDex, pokedexIndex));
             dexMenu.getItems().add(dexItem);
+        }
+    }
+
+    private void loadPokedexList(ListProperty<Label> currentDex, int pokedexIndex) {
+        try {
+            var dexRequest = httpService.buildDexRequest(pokedexIndex);
+            var dexResponse = httpService.getString(dexRequest);
+
+            if (dexResponse.statusCode() != 200) {
+                throw new IOException(dexResponse.statusCode() + ": " + dexResponse.body());
+            }
+
+            if (dexResponse != null) {
+                JSONObject dexes = new JSONObject(dexResponse.body());
+                JSONArray dexEntries = dexes.getJSONArray("pokemon_entries");
+
+                currentDex.clear();
+                dexEntries.forEach((entry) -> parseJSONIntoPokedex(currentDex, (JSONObject) entry));
+            }
+        } catch (IOException | InterruptedException | URISyntaxException ex) {
+            // TODO: add error reporting for end user
+            Platform.exit();
         }
     }
 
