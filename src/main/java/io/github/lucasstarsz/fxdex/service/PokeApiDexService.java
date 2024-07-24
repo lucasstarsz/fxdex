@@ -17,6 +17,7 @@ import io.github.lucasstarsz.fxdex.App;
 import io.github.lucasstarsz.fxdex.StyleClass;
 import javafx.application.Platform;
 import javafx.beans.property.ListProperty;
+import javafx.beans.property.StringProperty;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -43,7 +44,7 @@ public class PokeApiDexService implements DexService {
     }
 
     @Override
-    public void loadPokedexesForMenu(ListProperty<Label> currentDex, MenuButton dexMenu)
+    public void loadPokedexesForMenu(ListProperty<Label> currentDex, MenuButton dexMenu, StringProperty currentDexDisplayedProperty)
             throws URISyntaxException, IOException, InterruptedException {
         HttpRequest dexesRequest = httpService.getDefaultDexRequest();
 
@@ -63,12 +64,12 @@ public class PokeApiDexService implements DexService {
             String pokedexName = allDexes.getJSONArray("results").getJSONObject(i).getString("name");
             MenuItem dexItem = new MenuItem(pokedexName);
 
-            dexItem.onActionProperty().set((event) -> this.loadPokedexList(currentDex, pokedexIndex));
+            dexItem.onActionProperty().set((event) -> this.loadPokedexList(currentDex, pokedexIndex, currentDexDisplayedProperty));
             dexMenu.getItems().add(dexItem);
         }
     }
 
-    private void loadPokedexList(ListProperty<Label> currentDex, int pokedexIndex) {
+    private void loadPokedexList(ListProperty<Label> currentDex, int pokedexIndex, StringProperty currentDexDisplayedProperty) {
         try {
             var dexRequest = httpService.buildDexRequest(pokedexIndex);
             var dexResponse = httpService.getString(dexRequest);
@@ -78,11 +79,12 @@ public class PokeApiDexService implements DexService {
             }
 
             if (dexResponse != null) {
-                JSONObject dexes = new JSONObject(dexResponse.body());
-                JSONArray dexEntries = dexes.getJSONArray("pokemon_entries");
+                JSONObject dexInfo = new JSONObject(dexResponse.body());
+                JSONArray dexEntries = dexInfo.getJSONArray("pokemon_entries");
 
                 currentDex.clear();
                 dexEntries.forEach((entry) -> parseJSONIntoPokedex(currentDex, (JSONObject) entry));
+                currentDexDisplayedProperty.set("Pokedex: " + dexInfo.getString("name"));
             }
         } catch (IOException | InterruptedException | URISyntaxException ex) {
             // TODO: add error reporting for end user
@@ -106,16 +108,18 @@ public class PokeApiDexService implements DexService {
     }
 
     @Override
-    public void loadDefaultPokedex(ListProperty<Label> currentDex)
+    public void loadDefaultPokedex(ListProperty<Label> currentDex, StringProperty currentDexDisplayedProperty)
             throws IOException, InterruptedException, URISyntaxException {
-        var defaultDex = httpService.buildDexRequest(2);
-        var response = httpService.getString(defaultDex);
+        var defaultDexRequest = httpService.buildDexRequest(2);
+        var dexResponse = httpService.getString(defaultDexRequest);
 
-        if (response != null) {
-            JSONObject dexes = new JSONObject(response.body());
-            JSONArray dexEntries = dexes.getJSONArray("pokemon_entries");
+        if (dexResponse != null) {
+            JSONObject dexInfo = new JSONObject(dexResponse.body());
+            JSONArray dexEntries = dexInfo.getJSONArray("pokemon_entries");
+
             currentDex.clear();
             dexEntries.forEach((entry) -> parseJSONIntoPokedex(currentDex, (JSONObject) entry));
+            currentDexDisplayedProperty.set("Pokedex: " + dexInfo.getString("name"));
         }
     }
 
@@ -123,10 +127,10 @@ public class PokeApiDexService implements DexService {
     public void loadDexEntry(ListProperty<Region> dexEntriesProperty, String currentDexEntry)
             throws IOException, InterruptedException, URISyntaxException {
         HttpRequest dexEntryRequest = httpService.buildDexEntryRequest(currentDexEntry);
-        var response = httpService.getString(dexEntryRequest);
+        var dexResponse = httpService.getString(dexEntryRequest);
 
-        if (response != null) {
-            JSONObject dexEntry = new JSONObject(response.body());
+        if (dexResponse != null) {
+            JSONObject dexEntry = new JSONObject(dexResponse.body());
 
             String genus = "Genus not found";
             JSONArray genuses = dexEntry.getJSONArray("genera");
