@@ -1,6 +1,6 @@
 # FXDex
 
-FXDex is a project designed for easy access to information about pokemon as they appear throughout the many mainstream pokemon games.
+FXDex is a project designed for easy access to information about Pokémon as they appear throughout the many mainstream pokemon games.
 
 > [!WARNING]  
 > This project is still **in heavy development.** Features can and will change at any time, until a versioning cycle is defined.

@@ -15,12 +15,14 @@ limitations under the License. */
 package io.github.lucasstarsz.fxdex;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
 import atlantafx.base.theme.PrimerDark;
+import io.github.lucasstarsz.fxdex.misc.DexModule;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.Property;
@@ -44,12 +46,12 @@ public class App extends Application {
     private Stage primaryStage;
 
     @Override
-    public void start(Stage stage) throws IOException {
+    public void start(Stage stage) {
         Application.setUserAgentStylesheet(new PrimerDark().getUserAgentStylesheet());
         CurrentScene.addListener((c, o, n) -> {
             try {
                 switchSceneInfo(n);
-            } catch (IOException ex) {
+            } catch (Exception ex) {
                 ex.printStackTrace();
                 Platform.exit();
             }
@@ -75,7 +77,7 @@ public class App extends Application {
     }
 
     private void switchSceneInfo(String fxml) throws IOException {
-        FXMLLoader mainFXML = new FXMLLoader(getClass().getResource(fxml));
+        FXMLLoader mainFXML = new FXMLLoader(App.class.getResource(fxml));
 
         Injector injector = Guice.createInjector(new DexModule());
         mainFXML.setControllerFactory(injector::getInstance);
@@ -91,7 +93,7 @@ public class App extends Application {
         Scene scene = primaryStage.getScene();
 
         scene.getStylesheets().clear();
-        scene.getStylesheets().add(App.class.getResource("style.css").toExternalForm());
+        scene.getStylesheets().add(Objects.requireNonNull(App.class.getResource("style.css")).toExternalForm());
     }
 
     public static void main(String[] args) {

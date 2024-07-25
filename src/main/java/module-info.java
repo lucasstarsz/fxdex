@@ -13,7 +13,6 @@ See the License for the specific language governing permissions and
 limitations under the License. */
 
 open module fxdex.main {
-    requires java.base;
     requires java.net.http;
     
     requires javafx.base;
@@ -26,5 +25,4 @@ open module fxdex.main {
     requires jakarta.inject;
     requires org.apache.commons.text;
     requires atlantafx.base;
-    requires org.apache.commons.lang3;
 }

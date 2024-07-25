@@ -31,9 +31,6 @@ dependencies {
     implementation("jakarta.inject:jakarta.inject-api:2.0.1")
     implementation("io.github.mkpaz:atlantafx-base:2.0.1")
     implementation("org.apache.commons:commons-text:1.12.0")
-
-    testImplementation(libs.junit.jupiter)
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 javafx {

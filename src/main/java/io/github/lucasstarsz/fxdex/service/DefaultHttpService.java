@@ -25,9 +25,9 @@ import java.util.concurrent.ExecutorService;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
-import static io.github.lucasstarsz.fxdex.ApiLinks.AllDexesUrl;
-import static io.github.lucasstarsz.fxdex.ApiLinks.DexEntryUrl;
-import static io.github.lucasstarsz.fxdex.ApiLinks.DexUrl;
+import static io.github.lucasstarsz.fxdex.misc.ApiLinks.AllDexesUrl;
+import static io.github.lucasstarsz.fxdex.misc.ApiLinks.DexEntryUrl;
+import static io.github.lucasstarsz.fxdex.misc.ApiLinks.DexUrl;
 import io.github.lucasstarsz.fxdex.App;
 
 public class DefaultHttpService implements HttpService {
@@ -49,11 +49,6 @@ public class DefaultHttpService implements HttpService {
 
         // allow for platform-appropriate shutdown
         App.DexThreadHandler.setValue(dexThreadHandler);
-    }
-
-    @Override
-    public HttpClient getClient() {
-        return client;
     }
 
     @Override

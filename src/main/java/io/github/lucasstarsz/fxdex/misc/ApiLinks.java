@@ -12,10 +12,11 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. */
 
-package io.github.lucasstarsz.fxdex;
+package io.github.lucasstarsz.fxdex.misc;
 
-public class StyleClass {
-    public static final String PokemonName = "pokemon-name";
-    public static final String Subtitle = "subtitle";
-    public static final String Subtext = "subtext";
+public class ApiLinks {
+
+    public static final String DexUrl = "https://pokeapi.co/api/v2/pokedex/";
+    public static final String AllDexesUrl = "https://pokeapi.co/api/v2/pokedex/?offset=0&limit=32";
+    public static final String DexEntryUrl = "https://pokeapi.co/api/v2/pokemon-species/";
 }
