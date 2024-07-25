@@ -9,7 +9,7 @@ FXDex is a project designed for easy access to information about Pokémon as the
 
 This project can be downloaded and run in a few steps from your command line, provided you have [Git](https://git-scm.com/downloads) installed, or another way to clone the project.
 
-As the project does not have any releases yet, you must download the project source code as shown below.
+You may either download the [latest release](https://github.com/lucasstarsz/fxdex/releases), or use the below commands to download the project files and run it from those.
 
 ```bash
 # 1. Clone repository
