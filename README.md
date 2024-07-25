@@ -22,6 +22,14 @@ cd fxdex
 gradlew run
 ```
 
+If you want to create an executable:
+```bash
+gradlew jpackage
+```
+
+> [!NOTE]
+> You can generate an installer for the application by changing `skipInstaller` from `false` to `true`, inside the `jlink/jpacakge` task.
+
 ## Dependencies
 
 - [JSON in Java](https://github.com/stleary/JSON-java)
@@ -29,6 +37,7 @@ gradlew run
 - [Jakarta-Inject](https://github.com/jakartaee/inject)
 - [Apache Commons-Lang](https://github.com/apache/commons-lang) & [Apache Commons Text](https://github.com/apache/commons-text)
 - [atlantafx](https://github.com/mkpaz/atlantafx) for UI Theming
+- [Badass JLink Plugin](https://github.com/beryx/badass-jlink-plugin) for distribution.
 
 ## License
 
