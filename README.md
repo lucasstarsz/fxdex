@@ -32,6 +32,7 @@ gradlew jpackage
 
 ## Dependencies
 
+- [PokeAPI](https://pokeapi.co) for all details on Pokemon.
 - [JSON in Java](https://github.com/stleary/JSON-java)
 - [Google Guice](https://github.com/google/guice)
 - [Jakarta-Inject](https://github.com/jakartaee/inject)
