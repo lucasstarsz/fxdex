@@ -22,7 +22,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.text.WordUtils;
 import org.json.JSONArray;
@@ -179,21 +178,22 @@ public class PokeApiDexService implements DexService {
         int pokedexNumber = entry.getInt("entry_number");
         JSONObject pokemon = entry.getJSONObject("pokemon_species");
 
-        AtomicReference<String> pokemonName = new AtomicReference<>(WordUtils.capitalize(pokemon.getString("name")));
+        String apiPokemonName = pokemon.getString("name");
+        String pokemonName = WordUtils.capitalize(apiPokemonName);
 
         // account for Porygon-Z, Tapu-Koko, Tapu-Lele, Tapu-Bulu, & Tapu-Fini
-        pokemonName.set(pokemonName.get().replaceAll("-z", "-Z"));
-        pokemonName.set(pokemonName.get().replaceAll("-koko", "-Koko"));
-        pokemonName.set(pokemonName.get().replaceAll("-lele", "-Lele"));
-        pokemonName.set(pokemonName.get().replaceAll("-bulu", "-Bulu"));
-        pokemonName.set(pokemonName.get().replaceAll("-fini", "-Fini"));
+        pokemonName = pokemonName.replaceAll("-z", "-Z");
+        pokemonName = pokemonName.replaceAll("-koko", "-Koko");
+        pokemonName = pokemonName.replaceAll("-lele", "-Lele");
+        pokemonName = pokemonName.replaceAll("-bulu", "-Bulu");
+        pokemonName = pokemonName.replaceAll("-fini", "-Fini");
 
         int pokedexNumberDigitCount = countDigits(pokedexNumber);
         String pokedexNumberString = "0".repeat(pokemonDigitCount - pokedexNumberDigitCount) + pokedexNumber;
 
         Label pokemonLabel = new Label(pokedexNumberString + ": " + pokemonName);
         pokemonLabel.onMousePressedProperty().set((event) -> {
-            App.PokedexEntry.set(pokemonName.get());
+            App.PokedexEntry.set(apiPokemonName);
             App.CurrentScene.set("pokedexEntry.fxml");
         });
 
