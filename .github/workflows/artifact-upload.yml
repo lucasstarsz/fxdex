@@ -1,10 +1,7 @@
 ﻿# Uploads executables for main OS archs to GitHub on tag push
 name: Upload-Executables
 
-on:
-  push:
-    tags:
-      - '*'
+on: push
 
 jobs:
   upload-macos:
