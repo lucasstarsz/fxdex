@@ -22,6 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.text.WordUtils;
 import org.json.JSONArray;
@@ -66,6 +67,41 @@ public class PokeApiDexService implements DexService {
             "x", 10
     );
 
+    private static final Map<String, String> PokedexNameMap = Map.ofEntries(
+            Map.entry("national", "National Dex"),
+            Map.entry("kanto", "Kanto (Red/Blue/Yellow/Green)"),
+            Map.entry("original-johto", "Johto (Gold/Silver/Crystal)"),
+            Map.entry("hoenn", "Hoenn (Ruby/Sapphire/Emerald)"),
+            Map.entry("original-sinnoh", "Sinnoh (Diamond/Pearl)"),
+            Map.entry("extended-sinnoh", "Sinnoh (Platinum)"),
+            Map.entry("updated-johto", "Johto (HeartGold/SoulSilver/Crystal)"),
+            Map.entry("original-unova", "Unova (Black/White)"),
+            Map.entry("updated-unova", "Unova (Black2/White2)"),
+            Map.entry("conquest-gallery", "Conquest (Pokemon Conquest)"),
+            Map.entry("kalos-central", "Central Kalos (X/Y)"),
+            Map.entry("kalos-coastal", "Coastal Kalos (X/Y)"),
+            Map.entry("kalos-mountain", "Mountain Kalos (X/Y)"),
+            Map.entry("updated-hoenn", "Hoenn (Omega Ruby/Alpha Sapphire)"),
+            Map.entry("original-alola", "Alola (Sun/Moon)"),
+            Map.entry("original-melemele", "Alola-Melemele (Sun/Moon)"),
+            Map.entry("original-akala", "Alola-Akala (Sun/Moon)"),
+            Map.entry("original-ulaula", "Alola-Ulaula (Sun/Moon)"),
+            Map.entry("original-poni", "Alola-Poni (Sun/Moon)"),
+            Map.entry("updated-alola", "Alola (Ultra Sun/Ultra Moon)"),
+            Map.entry("updated-melemele", "Alola-Melemele (Ultra Sun/Ultra Moon)"),
+            Map.entry("updated-akala", "Alola-Akala (Ultra Sun/Ultra Moon)"),
+            Map.entry("updated-ulaula", "Alola-Ulaula (Ultra Sun/Ultra Moon)"),
+            Map.entry("updated-poni", "Alola-Poni (Ultra Sun/Ultra Moon)"),
+            Map.entry("letsgo-kanto", "Let's Go - Kanto (Let's go Pikachu/Eevee)"),
+            Map.entry("galar", "Galar (Sword/Shield)"),
+            Map.entry("isle-of-armor", "Galar - Isle of Armor (Sword/Shield DLC)"),
+            Map.entry("crown-tundra", "Galar - Crown Tundra (Sword/Shield DLC)"),
+            Map.entry("hisui", "Hisui (Legends: Arceus)"),
+            Map.entry("paldea", "Paldea (Scarlet/Violet)"),
+            Map.entry("kitakami", "Paldea - Kitakami (Scarlet/Violet DLC)"),
+            Map.entry("blueberry", "Paldea - Blueberry (Scarlet/Violet DLC)")
+    );
+
     private final HttpService httpService;
 
     @Inject
@@ -76,10 +112,10 @@ public class PokeApiDexService implements DexService {
     @Override
     public void loadPokedexesForMenu(ListProperty<Label> currentDex, MenuButton dexMenu,
                                      StringProperty currentDexDisplayedProperty)
-            throws URISyntaxException, IOException, InterruptedException {
+            throws IOException, InterruptedException {
         HttpRequest dexesRequest = httpService.getDefaultDexRequest();
-
         var dexesResponse = httpService.getString(dexesRequest);
+
         if (dexesResponse == null) {
             dexMenu.getItems().add(NoDexesAvailable);
             return;
@@ -90,6 +126,7 @@ public class PokeApiDexService implements DexService {
 
         for (int i = 0; i < dexCount; i++) {
             String pokedexName = allDexes.getJSONArray("results").getJSONObject(i).getString("name");
+            pokedexName = PokedexNameMap.get(pokedexName.toLowerCase());
             MenuItem dexItem = new MenuItem(pokedexName);
 
             // PokeApi's pokedex list starts at index 1
@@ -123,8 +160,9 @@ public class PokeApiDexService implements DexService {
                 JSONArray dexEntries = dexInfo.getJSONArray("pokemon_entries");
 
                 currentDex.clear();
-                dexEntries.forEach((entry) -> parseJSONIntoPokedex(currentDex, (JSONObject) entry));
-                currentDexDisplayedProperty.set("Pokedex: " + dexInfo.getString("name"));
+                int pokemonDigitCount = countDigits(dexEntries.length());
+                dexEntries.forEach((entry) -> parseJSONIntoPokedex(pokemonDigitCount, currentDex, (JSONObject) entry));
+                currentDexDisplayedProperty.set("Pokedex: " + PokedexNameMap.get(dexInfo.getString("name").toLowerCase()));
             }
         } catch (IOException | InterruptedException | URISyntaxException ex) {
             Alert errorAlert = new Alert(Alert.AlertType.ERROR);
@@ -137,18 +175,33 @@ public class PokeApiDexService implements DexService {
     }
 
     @Override
-    public void parseJSONIntoPokedex(ListProperty<Label> currentDex, JSONObject entry) {
+    public void parseJSONIntoPokedex(int pokemonDigitCount, ListProperty<Label> currentDex, JSONObject entry) {
         int pokedexNumber = entry.getInt("entry_number");
         JSONObject pokemon = entry.getJSONObject("pokemon_species");
-        String pokemonName = pokemon.getString("name");
 
-        Label pokemonLabel = new Label(pokedexNumber + ": " + pokemonName);
+        AtomicReference<String> pokemonName = new AtomicReference<>(WordUtils.capitalize(pokemon.getString("name")));
+
+        // account for Porygon-Z, Tapu-Koko, Tapu-Lele, Tapu-Bulu, & Tapu-Fini
+        pokemonName.set(pokemonName.get().replaceAll("-z", "-Z"));
+        pokemonName.set(pokemonName.get().replaceAll("-koko", "-Koko"));
+        pokemonName.set(pokemonName.get().replaceAll("-lele", "-Lele"));
+        pokemonName.set(pokemonName.get().replaceAll("-bulu", "-Bulu"));
+        pokemonName.set(pokemonName.get().replaceAll("-fini", "-Fini"));
+
+        int pokedexNumberDigitCount = countDigits(pokedexNumber);
+        String pokedexNumberString = "0".repeat(pokemonDigitCount - pokedexNumberDigitCount) + pokedexNumber;
+
+        Label pokemonLabel = new Label(pokedexNumberString + ": " + pokemonName);
         pokemonLabel.onMousePressedProperty().set((event) -> {
-            App.PokedexEntry.set(pokemonName);
+            App.PokedexEntry.set(pokemonName.get());
             App.CurrentScene.set("pokedexEntry.fxml");
         });
 
         currentDex.add(pokemonLabel);
+    }
+
+    private int countDigits(int n) {
+        return String.valueOf(n).length();
     }
 
     @Override
@@ -162,8 +215,9 @@ public class PokeApiDexService implements DexService {
             JSONArray dexEntries = dexInfo.getJSONArray("pokemon_entries");
 
             currentDex.clear();
-            dexEntries.forEach((entry) -> parseJSONIntoPokedex(currentDex, (JSONObject) entry));
-            currentDexDisplayedProperty.set("Pokedex: " + dexInfo.getString("name"));
+            int pokemonDigitCount = countDigits(dexEntries.length());
+            dexEntries.forEach((entry) -> parseJSONIntoPokedex(pokemonDigitCount, currentDex, (JSONObject) entry));
+            currentDexDisplayedProperty.set("Pokedex: " + PokedexNameMap.get(dexInfo.getString("name").toLowerCase()));
         }
     }
 

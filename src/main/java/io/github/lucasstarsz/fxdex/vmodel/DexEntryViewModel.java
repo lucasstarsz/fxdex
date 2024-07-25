@@ -26,7 +26,6 @@ import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
@@ -52,19 +51,20 @@ public class DexEntryViewModel {
 
     @FXML
     public void initialize() throws IOException, InterruptedException, URISyntaxException {
-        dexEntriesProperty.addListener((c, o, n) -> {
-            for (Region node : dexEntriesProperty.get()) {
-                node.prefWidthProperty().bind(pokemonInfoContainer.widthProperty());
-            }
-
-            pokemonInfoContainer.getChildren().setAll(dexEntriesProperty.get());
-        });
-
+        dexEntriesProperty.addListener((c, o, n) -> prepDexEntriesOnChange());
         dexService.loadDexEntry(dexEntriesProperty, currentDexEntryNameProperty.get());
     }
 
+    private void prepDexEntriesOnChange() {
+        for (Region node : dexEntriesProperty.get()) {
+            node.prefWidthProperty().bind(pokemonInfoContainer.widthProperty());
+        }
+
+        pokemonInfoContainer.getChildren().setAll(dexEntriesProperty.get());
+    }
+
     @FXML
-    public void backToPokedex(ActionEvent actionEvent) {
+    public void backToPokedex() {
         App.CurrentScene.set("main.fxml");
     }
 }

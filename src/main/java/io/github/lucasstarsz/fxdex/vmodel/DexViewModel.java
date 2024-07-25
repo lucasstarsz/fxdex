@@ -41,13 +41,14 @@ public class DexViewModel {
     @FXML
     private Label currentDexDisplayed;
 
-    private StringProperty currentDexDisplayedProperty;
+    private final StringProperty currentDexDisplayedProperty;
     private final ListProperty<Label> dexProperty;
     private final DexService dexService;
 
     @Inject
     public DexViewModel(DexService dexService) {
         this.dexService = dexService;
+        currentDexDisplayedProperty = new SimpleStringProperty();
         dexProperty = new SimpleListProperty<>(FXCollections.observableArrayList());
     }
 
@@ -55,7 +56,6 @@ public class DexViewModel {
     public void initialize() throws IOException, URISyntaxException, InterruptedException {
         dexProperty.addListener((c, o, n) -> dexContainer.getChildren().setAll(dexProperty.get()));
 
-        currentDexDisplayedProperty = new SimpleStringProperty();
         currentDexDisplayedProperty.addListener((c, o, n) -> currentDexDisplayed.setText(n));
 
         dexService.loadPokedexesForMenu(dexProperty, dexMenu, currentDexDisplayedProperty);

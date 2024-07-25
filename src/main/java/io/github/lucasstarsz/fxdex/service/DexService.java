@@ -30,7 +30,7 @@ public interface DexService {
     void loadPokedexesForMenu(ListProperty<Label> currentDex, MenuButton dexMenu, StringProperty currentDexDisplayedProperty)
             throws URISyntaxException, IOException, InterruptedException;
 
-    void parseJSONIntoPokedex(ListProperty<Label> currentDex, JSONObject entry);
+    void parseJSONIntoPokedex(int pokemonDigitCount, ListProperty<Label> currentDex, JSONObject entry);
 
     void loadDefaultPokedex(ListProperty<Label> currentDex, StringProperty currentDexDisplayedProperty)
             throws IOException, InterruptedException, URISyntaxException;
