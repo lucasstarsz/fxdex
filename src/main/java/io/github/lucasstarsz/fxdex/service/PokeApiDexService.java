@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.text.WordUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -45,12 +46,25 @@ import javafx.stage.Modality;
 
 public class PokeApiDexService implements DexService {
 
-    public static final String IntroducedIn = "Introduced in: ";
-    public static final String Habitat = "Lives in: ";
-    public static final String EggGroup = "Egg groups: ";
+    public static final String IntroducedIn = "Introduced In: Generation ";
+    public static final String PokedexEntries = "Pokedex Entries:";
+    public static final String EggGroups = "Egg Groups:";
 
     private static final MenuItem NoDexesAvailable = new MenuItem("No Pokedexes loaded.");
     private static final Insets InfoInsets = new Insets(0, 0, 5, 0);
+
+    private static final Map<String, Integer> RomanNumeralMap = Map.of(
+            "i", 1,
+            "ii", 2,
+            "iii", 3,
+            "iv", 4,
+            "v", 5,
+            "vi", 6,
+            "vii", 7,
+            "viii", 8,
+            "ix", 9,
+            "x", 10
+    );
 
     private final HttpService httpService;
 
@@ -61,7 +75,7 @@ public class PokeApiDexService implements DexService {
 
     @Override
     public void loadPokedexesForMenu(ListProperty<Label> currentDex, MenuButton dexMenu,
-            StringProperty currentDexDisplayedProperty)
+                                     StringProperty currentDexDisplayedProperty)
             throws URISyntaxException, IOException, InterruptedException {
         HttpRequest dexesRequest = httpService.getDefaultDexRequest();
 
@@ -95,7 +109,7 @@ public class PokeApiDexService implements DexService {
     }
 
     private void loadPokedexList(ListProperty<Label> currentDex, int pokedexIndex,
-            StringProperty currentDexDisplayedProperty) {
+                                 StringProperty currentDexDisplayedProperty) {
         try {
             var dexRequest = httpService.buildDexRequest(pokedexIndex);
             var dexResponse = httpService.getString(dexRequest);
@@ -172,13 +186,24 @@ public class PokeApiDexService implements DexService {
                 }
             }
 
-            String generationIntroducedIn = IntroducedIn + dexEntry.getJSONObject("generation").getString("name");
+            String introducedInString = dexEntry.getJSONObject("generation").getString("name");
+            introducedInString = introducedInString.replaceAll("generation-", "");
+            String generationIntroducedIn = IntroducedIn + RomanNumeralMap.get(introducedInString.toLowerCase());
 
             List<String> eggGroups = new ArrayList<>();
             JSONArray eggGroupJSON = dexEntry.getJSONArray("egg_groups");
             for (int i = 0; i < eggGroupJSON.length(); i++) {
                 JSONObject eggGroup = eggGroupJSON.getJSONObject(i);
-                eggGroups.add(eggGroup.getString("name"));
+
+                String eggGroupString = eggGroup.getString("name");
+
+                // account for Human-Like egg group
+                eggGroupString = eggGroupString.replaceAll("shape", " like");
+                eggGroupString = WordUtils.capitalize(eggGroupString);
+                eggGroupString = eggGroupString.replaceAll(" ", "-");
+
+
+                eggGroups.add(eggGroupString);
             }
 
             Map<String, String> flavorTexts = new LinkedHashMap<>();
@@ -205,7 +230,7 @@ public class PokeApiDexService implements DexService {
             introduced.setId(StyleClass.Subtitle);
 
             HBox eggGroupContainer = new HBox(5);
-            Label pokemonEggGroups = new Label("Egg groups:");
+            Label pokemonEggGroups = new Label(EggGroups);
             pokemonEggGroups.setMinWidth(75);
             eggGroupContainer.getChildren().add(pokemonEggGroups);
 
@@ -220,19 +245,28 @@ public class PokeApiDexService implements DexService {
                 eggGroupContainer.getChildren().add(eggGroupLabel);
             }
 
-            Label pokemonFlavorTexts = new Label("Pokedex Entries:");
+            Label pokemonFlavorTexts = new Label(PokedexEntries);
             pokemonFlavorTexts.setId(StyleClass.Subtitle);
 
             VBox flavorTextsContainer = new VBox();
             List<HBox> flavorTextList = flavorTexts.entrySet().stream()
                     .map((entry) -> {
                         HBox container = new HBox(5);
-                        Label gameName = new Label(entry.getKey() + ": ");
-                        Label flavorText = new Label(entry.getValue().replaceAll("(\n|\u000c)", " "));
 
+                        String gameNameString = entry.getKey() + ":";
+                        gameNameString = gameNameString.replaceAll("-", " ");
+                        gameNameString = WordUtils.capitalize(gameNameString);
+
+                        Label gameName = new Label(gameNameString);
                         gameName.setMinWidth(100);
                         gameName.setWrapText(false);
                         gameName.setAlignment(Pos.CENTER_RIGHT);
+
+                        String flavorTextString = entry.getValue();
+                        flavorTextString = flavorTextString.replaceAll("([\n\f])", " ");
+                        flavorTextString = flavorTextString.replaceAll("- ", "-");
+
+                        Label flavorText = new Label(flavorTextString);
                         flavorText.setWrapText(true);
 
                         container.getChildren().addAll(gameName, flavorText);

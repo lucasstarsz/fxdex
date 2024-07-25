@@ -24,5 +24,7 @@ open module fxdex.main {
     requires org.json;
     requires com.google.guice;
     requires jakarta.inject;
+    requires org.apache.commons.text;
     requires atlantafx.base;
+    requires org.apache.commons.lang3;
 }

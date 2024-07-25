@@ -27,6 +27,7 @@ gradlew run
 - [JSON in Java](https://github.com/stleary/JSON-java)
 - [Google Guice](https://github.com/google/guice)
 - [Jakarta-Inject](https://github.com/jakartaee/inject)
+- [Apache Commons-Lang](https://github.com/apache/commons-lang) & [Apache Commons Text](https://github.com/apache/commons-text)
 - [atlantafx](https://github.com/mkpaz/atlantafx) for UI Theming
 
 ## License
