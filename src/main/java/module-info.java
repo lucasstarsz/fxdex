@@ -14,6 +14,7 @@ limitations under the License. */
 
 open module fxdex.main {
     requires java.net.http;
+    requires jdk.crypto.ec;
     
     requires javafx.base;
     requires javafx.graphics;
