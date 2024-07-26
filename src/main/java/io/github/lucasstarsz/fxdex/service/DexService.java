@@ -26,7 +26,7 @@ import javafx.scene.layout.Region;
 public interface DexService {
 
     void loadPokedexesForMenu(ListProperty<Label> currentDex, MenuButton dexMenu, StringProperty currentDexDisplayedProperty)
-            throws IOException, InterruptedException;
+            throws IOException, InterruptedException, URISyntaxException;
 
     void loadDefaultPokedex(ListProperty<Label> currentDex, StringProperty currentDexDisplayedProperty)
             throws IOException, InterruptedException, URISyntaxException;

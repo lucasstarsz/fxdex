@@ -26,8 +26,7 @@ import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
 import static io.github.lucasstarsz.fxdex.misc.ApiLinks.AllDexesUrl;
-import static io.github.lucasstarsz.fxdex.misc.ApiLinks.DexEntryUrl;
-import static io.github.lucasstarsz.fxdex.misc.ApiLinks.DexUrl;
+
 import io.github.lucasstarsz.fxdex.App;
 
 public class DefaultHttpService implements HttpService {
@@ -52,26 +51,16 @@ public class DefaultHttpService implements HttpService {
     }
 
     @Override
+    public HttpClient getClient() {
+        return client;
+    }
+
+    @Override
     public HttpRequest getDefaultDexRequest() {
-        return dexesRequest;
+        return HttpRequest.newBuilder(dexesRequest, (n, v) -> true).build();
     }
 
-    @Override
-    public HttpRequest buildDexRequest(int dexId) throws URISyntaxException {
-        return HttpRequest.newBuilder(dexesRequest, (n, v) -> true)
-                .uri(new URI(DexUrl + dexId + "/"))
-                .build();
-    }
-
-    @Override
-    public HttpResponse<String> getString(HttpRequest request) throws IOException, InterruptedException {
-        return client.send(request, HttpResponse.BodyHandlers.ofString());
-    }
-
-    @Override
-    public HttpRequest buildDexEntryRequest(String dexEntry) throws URISyntaxException {
-        return HttpRequest.newBuilder(dexesRequest, (n, v) -> true)
-                .uri(new URI(DexEntryUrl + dexEntry + "/"))
-                .build();
+    public HttpResponse<String> get(DexRequestOptions options) throws IOException, InterruptedException {
+        return client.send(options.buildGetRequest(this), HttpResponse.BodyHandlers.ofString());
     }
 }

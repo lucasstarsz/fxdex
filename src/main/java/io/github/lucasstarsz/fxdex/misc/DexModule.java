@@ -20,15 +20,13 @@ import java.util.concurrent.Executors;
 import com.google.inject.AbstractModule;
 import com.google.inject.name.Names;
 
-import io.github.lucasstarsz.fxdex.service.DefaultHttpService;
-import io.github.lucasstarsz.fxdex.service.DexService;
-import io.github.lucasstarsz.fxdex.service.HttpService;
-import io.github.lucasstarsz.fxdex.service.PokeApiDexService;
+import io.github.lucasstarsz.fxdex.service.*;
 
 public class DexModule extends AbstractModule {
 
     @Override
     protected void configure() {
+        bind(UiService.class).to(DefaultUIService.class);
         bind(DexService.class).to(PokeApiDexService.class);
         bind(HttpService.class).to(DefaultHttpService.class);
 
