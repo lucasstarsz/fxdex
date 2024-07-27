@@ -19,6 +19,7 @@ import java.net.URISyntaxException;
 
 import com.google.inject.Inject;
 
+import io.github.lucasstarsz.fxdex.App;
 import io.github.lucasstarsz.fxdex.service.DexService;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
@@ -43,6 +44,7 @@ public class DexViewModel {
 
     private final StringProperty currentDexName;
     private final ListProperty<Label> currentDexList;
+
     private final DexService dexService;
 
     @Inject
@@ -54,10 +56,25 @@ public class DexViewModel {
 
     @FXML
     public void initialize() throws IOException, URISyntaxException, InterruptedException {
-        currentDexList.addListener((c, o, n) -> dexContainer.getChildren().setAll(currentDexList.get()));
-        currentDexName.addListener((c, o, n) -> currentDexDisplayed.setText(n));
+        currentDexList.addListener((c, o, n) -> {
+            dexContainer.getChildren().setAll(currentDexList.get());
+            App.getDexVMCache().setDexList(currentDexList.get());
+        });
+        currentDexName.addListener((c, o, n) -> {
+            currentDexDisplayed.setText(n);
+            App.getDexVMCache().setDexName(currentDexName.get());
+        });
 
         dexService.loadPokedexesForMenu(currentDexList, dexMenu, currentDexName);
-        dexService.loadDefaultPokedex(currentDexList, currentDexName);
+
+        var lastDexList = App.getDexVMCache().getDexList();
+        var lastDexName = App.getDexVMCache().getDexName();
+
+        if (lastDexList == null || lastDexList.isEmpty()) {
+            dexService.loadDefaultPokedex(currentDexList, currentDexName);
+        } else {
+            currentDexList.set(lastDexList);
+            currentDexName.set(lastDexName);
+        }
     }
 }

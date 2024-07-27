@@ -23,6 +23,7 @@ import com.google.inject.Injector;
 
 import atlantafx.base.theme.PrimerDark;
 import io.github.lucasstarsz.fxdex.misc.DexModule;
+import io.github.lucasstarsz.fxdex.misc.DexViewModelCache;
 import io.github.lucasstarsz.fxdex.service.UiService;
 import javafx.application.Application;
 import javafx.beans.property.Property;
@@ -43,6 +44,7 @@ public class App extends Application {
     public static final StringProperty CurrentDexEntry = new SimpleStringProperty();
     public static final StringProperty CurrentScene = new SimpleStringProperty();
     public static final Property<ExecutorService> DexThreadHandler = new SimpleObjectProperty<>();
+    private static final DexViewModelCache dexVMCache = new DexViewModelCache();
 
     private Stage primaryStage;
 
@@ -100,5 +102,9 @@ public class App extends Application {
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    public static DexViewModelCache getDexVMCache() {
+        return dexVMCache;
     }
 }
