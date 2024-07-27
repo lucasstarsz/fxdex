@@ -22,7 +22,7 @@ plugins {
 }
 
 group = "org.lucasstarsz"
-version = "0.0.2"
+version = "0.0.3"
 
 repositories {
     mavenCentral()
@@ -59,7 +59,9 @@ tasks.named<Test>("test") {
 }
 
 val os: OperatingSystem = DefaultNativePlatform.getCurrentOperatingSystem()
-
+if (os.isMacOsX) {
+    version = "1.0.3"
+}
 
 // Packaging & Distribution
 val distributionName = "FXDex ${version}"
@@ -80,7 +82,7 @@ jlink {
         if (!skipInstaller) {
             installerOptions.addAll(
                 listOf(
-                    "--description", project.description as String,
+                    "--description", project.description,
                     "--vendor", project.group as String,
                     "--app-version", project.version as String
                 )
