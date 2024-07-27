@@ -13,6 +13,7 @@ import javafx.scene.layout.VBox;
 import org.apache.commons.text.WordUtils;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static io.github.lucasstarsz.fxdex.misc.ApiConversionTables.PokedexNameMap;
@@ -81,36 +82,34 @@ public class DefaultUIService implements UiService {
 
         var flavorTexts = dexEntryItem.getFlavorTexts();
         VBox flavorTextsContainer = new VBox();
-        List<HBox> flavorTextList = flavorTexts.entrySet().stream()
-                .map((entry) -> {
-                    HBox container = new HBox(5);
+        List<HBox> flavorTextList = new ArrayList<>();
 
-                    String gameNameString = entry.getKey() + ":";
-                    gameNameString = gameNameString.replaceAll("-", " ");
-                    gameNameString = WordUtils.capitalize(gameNameString);
+        for (var flavorTextEntry : flavorTexts.entrySet()) {
+            HBox container = new HBox(5);
 
-                    Label gameName = new Label(gameNameString);
-                    gameName.setMinWidth(100);
-                    gameName.setWrapText(false);
-                    gameName.setAlignment(Pos.CENTER_RIGHT);
+            String gameNameString = flavorTextEntry.getKey() + ":";
+            gameNameString = gameNameString.replaceAll("-", " ");
+            gameNameString = WordUtils.capitalize(gameNameString);
 
-                    String flavorTextString = entry.getValue();
-                    flavorTextString = flavorTextString.replaceAll("([\n\f])", " ");
-                    flavorTextString = flavorTextString.replaceAll("- ", "-");
+            Label gameName = new Label(gameNameString);
+            gameName.setMinWidth(100);
+            gameName.setWrapText(false);
+            gameName.setAlignment(Pos.CENTER_RIGHT);
 
-                    Label flavorText = new Label(flavorTextString);
-                    flavorText.setWrapText(true);
+            String flavorTextString = flavorTextEntry.getValue();
+            flavorTextString = flavorTextString.replaceAll("([\n\f])", " ");
+            flavorTextString = flavorTextString.replaceAll("- ", "-");
 
-                    container.getChildren().addAll(gameName, flavorText);
-                    container.setMinWidth(container.getWidth());
+            Label flavorText = new Label(flavorTextString);
+            flavorText.setWrapText(true);
 
-                    return container;
-                }).toList();
+            container.getChildren().addAll(gameName, flavorText);
+            container.setMinWidth(container.getWidth());
+            container.setId(StyleClasses.Subtext);
+            VBox.setMargin(container, InfoInsets);
 
-        flavorTextList.forEach((l) -> {
-            l.setId(StyleClasses.Subtext);
-            VBox.setMargin(l, InfoInsets);
-        });
+            flavorTextList.add(container);
+        }
 
         flavorTextsContainer.getChildren().addAll(flavorTextList);
 

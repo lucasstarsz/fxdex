@@ -34,6 +34,6 @@ public interface DexService {
     void loadDefaultPokedex(ListProperty<Label> currentDexUi, StringProperty currentDexName)
             throws IOException, InterruptedException, URISyntaxException;
 
-    void loadDexEntry(ListProperty<Region> dexEntriesProperty, String currentDexEntry)
+    void loadDexEntry(ListProperty<Region> dexEntriesList, String currentDexEntryName)
             throws IOException, InterruptedException, URISyntaxException;
 }

@@ -96,7 +96,7 @@ public class PokeApiDexService implements DexService {
 
             currentDexName.set("Pokedex: " + PokedexNameMap.get(dexItem.getApiPokedexName()));
         } catch (IOException | InterruptedException | URISyntaxException ex) {
-            Alert errorAlert = uiService.createErrorAlert("Unable to open Pokedex", ex);
+            Alert errorAlert = UiService.createErrorAlert("Unable to open Pokedex", ex);
             errorAlert.showAndWait();
         }
     }
@@ -128,15 +128,13 @@ public class PokeApiDexService implements DexService {
     }
 
     @Override
-    public void loadDexEntry(ListProperty<Region> dexEntriesProperty, String currentDexEntry)
+    public void loadDexEntry(ListProperty<Region> dexEntriesList, String currentDexEntryName)
             throws IOException, InterruptedException, URISyntaxException {
-        var requestOptions = new DexRequestOptions(DexRequestType.DexEntry, currentDexEntry);
+        var requestOptions = new DexRequestOptions(DexRequestType.DexEntry, currentDexEntryName);
         var dexResponse = httpService.get(requestOptions);
 
         JSONObject dexEntry = new JSONObject(dexResponse.body());
-
-        var dexEntryUI = uiService.createDexEntryUI(dexEntry, currentDexEntry);
-
-        dexEntriesProperty.setAll(dexEntryUI);
+        var dexEntryUI = uiService.createDexEntryUI(dexEntry, currentDexEntryName);
+        dexEntriesList.setAll(dexEntryUI);
     }
 }

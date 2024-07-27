@@ -14,6 +14,7 @@ limitations under the License. */
 
 open module fxdex.main {
     requires java.net.http;
+
     // required for allowing HTTPS connections on app usage outside the developer's computer.
     requires jdk.crypto.ec;
 
@@ -23,9 +24,10 @@ open module fxdex.main {
     requires javafx.fxml;
 
     requires org.json;
+    requires org.apache.commons.text;
+    requires atlantafx.base;
+
     requires com.google.guice;
     // required for Guice to function.
     requires jakarta.inject;
-    requires org.apache.commons.text;
-    requires atlantafx.base;
 }

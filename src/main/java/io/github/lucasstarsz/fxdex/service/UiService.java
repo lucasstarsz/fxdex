@@ -25,16 +25,6 @@ public interface UiService {
     List<MenuItem> createPokedexItems(JSONObject allDexes, ListProperty<Label> currentDexUi,
                                       StringProperty currentDexName, DexService dexService);
 
-    default Alert createErrorAlert(String customErrorMessage, Exception e) {
-        Alert errorAlert = new Alert(Alert.AlertType.ERROR);
-        errorAlert.initModality(Modality.APPLICATION_MODAL);
-        errorAlert.setResizable(true);
-        errorAlert.setHeaderText(customErrorMessage);
-        errorAlert.setContentText(e.getLocalizedMessage());
-
-        return errorAlert;
-    }
-
     default Label createPokedexListItem(int pokemonDigitCount, JsonDexListItem dexEntryFromList) {
         String pokemonName = WordUtils.capitalize(dexEntryFromList.getApiPokemonName());
 
@@ -62,4 +52,14 @@ public interface UiService {
     }
 
     List<Region> createDexEntryUI(JSONObject dexEntryJSON, String currentDexEntry);
+
+    static Alert createErrorAlert(String customErrorMessage, Exception e) {
+        Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+        errorAlert.initModality(Modality.APPLICATION_MODAL);
+        errorAlert.setResizable(true);
+        errorAlert.setHeaderText(customErrorMessage);
+        errorAlert.setContentText(e.getLocalizedMessage());
+
+        return errorAlert;
+    }
 }

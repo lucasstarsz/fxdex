@@ -36,31 +36,31 @@ public class DexEntryViewModel {
     public VBox pokemonInfoContainer;
 
     private final DexService dexService;
-    private final StringProperty currentDexEntryNameProperty;
-    private final ListProperty<Region> dexEntriesProperty;
+    private final StringProperty currentDexEntryName;
+    private final ListProperty<Region> dexEntriesList;
 
     @Inject
     public DexEntryViewModel(DexService dexService) {
         this.dexService = dexService;
 
-        currentDexEntryNameProperty = new SimpleStringProperty();
-        currentDexEntryNameProperty.bind(App.PokedexEntry);
+        currentDexEntryName = new SimpleStringProperty();
+        currentDexEntryName.bind(App.PokedexEntry);
 
-        dexEntriesProperty = new SimpleListProperty<>(FXCollections.observableArrayList());
+        dexEntriesList = new SimpleListProperty<>(FXCollections.observableArrayList());
     }
 
     @FXML
     public void initialize() throws IOException, InterruptedException, URISyntaxException {
-        dexEntriesProperty.addListener((c, o, n) -> prepDexEntriesOnChange());
-        dexService.loadDexEntry(dexEntriesProperty, currentDexEntryNameProperty.get());
+        dexEntriesList.addListener((c, o, n) -> prepDexEntriesOnChange());
+        dexService.loadDexEntry(dexEntriesList, currentDexEntryName.get());
     }
 
     private void prepDexEntriesOnChange() {
-        for (Region node : dexEntriesProperty.get()) {
+        for (Region node : dexEntriesList.get()) {
             node.prefWidthProperty().bind(pokemonInfoContainer.widthProperty());
         }
 
-        pokemonInfoContainer.getChildren().setAll(dexEntriesProperty.get());
+        pokemonInfoContainer.getChildren().setAll(dexEntriesList.get());
     }
 
     @FXML

@@ -23,8 +23,8 @@ import com.google.inject.Injector;
 
 import atlantafx.base.theme.PrimerDark;
 import io.github.lucasstarsz.fxdex.misc.DexModule;
+import io.github.lucasstarsz.fxdex.service.UiService;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -32,6 +32,7 @@ import javafx.beans.property.StringProperty;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -52,8 +53,9 @@ public class App extends Application {
             try {
                 switchSceneInfo(n);
             } catch (Exception ex) {
-                ex.printStackTrace();
-                Platform.exit();
+                Alert errorAlert = UiService.createErrorAlert("Unable to open Pokedex", ex);
+                errorAlert.initOwner(stage);
+                errorAlert.showAndWait();
             }
         });
 
