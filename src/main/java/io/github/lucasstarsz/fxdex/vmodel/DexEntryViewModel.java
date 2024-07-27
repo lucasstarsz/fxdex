@@ -44,7 +44,7 @@ public class DexEntryViewModel {
         this.dexService = dexService;
 
         currentDexEntryName = new SimpleStringProperty();
-        currentDexEntryName.bind(App.PokedexEntry);
+        currentDexEntryName.bind(App.CurrentDexEntry);
 
         dexEntriesList = new SimpleListProperty<>(FXCollections.observableArrayList());
     }

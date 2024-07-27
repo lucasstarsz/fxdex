@@ -30,4 +30,5 @@ open module fxdex.main {
     requires com.google.guice;
     // required for Guice to function.
     requires jakarta.inject;
+    requires org.apache.commons.lang3;
 }

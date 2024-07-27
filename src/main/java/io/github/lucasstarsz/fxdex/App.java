@@ -40,7 +40,7 @@ public class App extends Application {
 
     private static final VBox DefaultParent = new VBox();
 
-    public static final StringProperty PokedexEntry = new SimpleStringProperty();
+    public static final StringProperty CurrentDexEntry = new SimpleStringProperty();
     public static final StringProperty CurrentScene = new SimpleStringProperty();
     public static final Property<ExecutorService> DexThreadHandler = new SimpleObjectProperty<>();
 

@@ -40,7 +40,7 @@ public interface UiService {
 
         Label pokemonLabel = new Label(dexNumberString + ": " + pokemonName);
         pokemonLabel.onMousePressedProperty().set((event) -> {
-            App.PokedexEntry.set(dexEntryFromList.getApiPokemonName());
+            App.CurrentDexEntry.set(dexEntryFromList.getApiPokemonName());
             App.CurrentScene.set("pokedexEntry.fxml");
         });
 
