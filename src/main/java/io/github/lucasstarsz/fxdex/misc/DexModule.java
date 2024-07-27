@@ -26,6 +26,7 @@ public class DexModule extends AbstractModule {
 
     @Override
     protected void configure() {
+        bind(JsonParserService.class).to(PokeApiJsonParserService.class);
         bind(UiService.class).to(DefaultUIService.class);
         bind(DexService.class).to(PokeApiDexService.class);
         bind(HttpService.class).to(DefaultHttpService.class);

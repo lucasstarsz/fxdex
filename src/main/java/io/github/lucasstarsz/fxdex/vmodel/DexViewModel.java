@@ -41,24 +41,23 @@ public class DexViewModel {
     @FXML
     private Label currentDexDisplayed;
 
-    private final StringProperty currentDexDisplayedProperty;
-    private final ListProperty<Label> dexProperty;
+    private final StringProperty currentDexName;
+    private final ListProperty<Label> currentDexList;
     private final DexService dexService;
 
     @Inject
     public DexViewModel(DexService dexService) {
         this.dexService = dexService;
-        currentDexDisplayedProperty = new SimpleStringProperty();
-        dexProperty = new SimpleListProperty<>(FXCollections.observableArrayList());
+        currentDexName = new SimpleStringProperty();
+        currentDexList = new SimpleListProperty<>(FXCollections.observableArrayList());
     }
 
     @FXML
     public void initialize() throws IOException, URISyntaxException, InterruptedException {
-        dexProperty.addListener((c, o, n) -> dexContainer.getChildren().setAll(dexProperty.get()));
+        currentDexList.addListener((c, o, n) -> dexContainer.getChildren().setAll(currentDexList.get()));
+        currentDexName.addListener((c, o, n) -> currentDexDisplayed.setText(n));
 
-        currentDexDisplayedProperty.addListener((c, o, n) -> currentDexDisplayed.setText(n));
-
-        dexService.loadPokedexesForMenu(dexProperty, dexMenu, currentDexDisplayedProperty);
-        dexService.loadDefaultPokedex(dexProperty, currentDexDisplayedProperty);
+        dexService.loadPokedexesForMenu(currentDexList, dexMenu, currentDexName);
+        dexService.loadDefaultPokedex(currentDexList, currentDexName);
     }
 }

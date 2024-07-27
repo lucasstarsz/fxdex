@@ -8,8 +8,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpRequest;
 
-import static io.github.lucasstarsz.fxdex.misc.ApiConversionTables.PokedexNameToIdMap;
-
 public class DexRequestOptions {
     private final Property<URI> linkProperty;
 
@@ -35,8 +33,8 @@ public class DexRequestOptions {
         linkProperty.setValue(new URI(ApiLinks.DexEntryUrl + dexEntry.toLowerCase() + '/'));
     }
 
-    private void setLinkAsDexList(String pokedex) throws URISyntaxException {
-        linkProperty.setValue(new URI(ApiLinks.DexUrl + PokedexNameToIdMap.get(pokedex.toLowerCase()) + '/'));
+    private void setLinkAsDexList(String dexLink) throws URISyntaxException {
+        linkProperty.setValue(new URI(dexLink));
     }
 
     public HttpRequest buildGetRequest(HttpService httpService) {

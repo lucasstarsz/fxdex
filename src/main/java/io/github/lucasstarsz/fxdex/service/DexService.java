@@ -17,6 +17,7 @@ package io.github.lucasstarsz.fxdex.service;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import io.github.lucasstarsz.fxdex.model.JsonDexItem;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.control.Label;
@@ -25,10 +26,12 @@ import javafx.scene.layout.Region;
 
 public interface DexService {
 
-    void loadPokedexesForMenu(ListProperty<Label> currentDex, MenuButton dexMenu, StringProperty currentDexDisplayedProperty)
+    void loadPokedexesForMenu(ListProperty<Label> currentDexUi, MenuButton dexMenu, StringProperty currentDexName)
             throws IOException, InterruptedException, URISyntaxException;
 
-    void loadDefaultPokedex(ListProperty<Label> currentDex, StringProperty currentDexDisplayedProperty)
+    void loadPokedexList(ListProperty<Label> currentDexUi, JsonDexItem dexItem, StringProperty currentDexName);
+
+    void loadDefaultPokedex(ListProperty<Label> currentDexUi, StringProperty currentDexName)
             throws IOException, InterruptedException, URISyntaxException;
 
     void loadDexEntry(ListProperty<Region> dexEntriesProperty, String currentDexEntry)
