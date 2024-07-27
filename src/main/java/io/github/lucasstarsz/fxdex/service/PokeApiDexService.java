@@ -32,13 +32,13 @@ import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
 import javafx.scene.layout.Region;
 
-import static io.github.lucasstarsz.fxdex.misc.ApiConversionTables.PokedexNameMap;
+import static io.github.lucasstarsz.fxdex.misc.ApiConversionTables.DexNameMap;
 import static io.github.lucasstarsz.fxdex.service.UiService.NoDexesAvailable;
 
 public class PokeApiDexService implements DexService {
 
-    public static final String DefaultPokedexUrl = ApiLinks.DexUrl
-            + ApiConversionTables.PokedexNameToIdMap.get(ApiConversionTables.Kanto);
+    public static final String DefaultDexUrl = ApiLinks.DexUrl
+            + ApiConversionTables.DexNameToIdMap.get(ApiConversionTables.Kanto);
 
     private final HttpService httpService;
     private final UiService uiService;
@@ -52,7 +52,7 @@ public class PokeApiDexService implements DexService {
     }
 
     @Override
-    public void loadPokedexesForMenu(ListProperty<Label> currentDexUi, MenuButton dexMenu, StringProperty currentDexName)
+    public void loadDexesForMenu(ListProperty<Label> currentDexUi, MenuButton dexMenu, StringProperty currentDexName)
             throws IOException, InterruptedException, URISyntaxException {
         var dexesResponse = httpService.get(DexRequestOptions.defaultOptions());
         if (dexesResponse.statusCode() != 200) {
@@ -60,7 +60,7 @@ public class PokeApiDexService implements DexService {
             throw new IOException(dexesResponse.statusCode() + ": " + dexesResponse.body());
         }
 
-        var menuItems = uiService.createPokedexItems(
+        var menuItems = uiService.createDexItems(
                 new JSONObject(dexesResponse.body()),
                 currentDexUi,
                 currentDexName,
@@ -71,9 +71,9 @@ public class PokeApiDexService implements DexService {
     }
 
     @Override
-    public void loadPokedexList(ListProperty<Label> currentDexUi, JsonDexItem dexItem, StringProperty currentDexName) {
+    public void loadDexList(ListProperty<Label> currentDexUi, JsonDexItem dexItem, StringProperty currentDexName) {
         try {
-            DexRequestOptions dexRequestOptions = new DexRequestOptions(DexRequestType.DexList, dexItem.getApiPokedexUrl());
+            DexRequestOptions dexRequestOptions = new DexRequestOptions(DexRequestType.DexList, dexItem.getApiDexUrl());
             var dexResponse = httpService.get(dexRequestOptions);
 
             if (dexResponse.statusCode() != 200) {
@@ -90,13 +90,13 @@ public class PokeApiDexService implements DexService {
             currentDexUi.clear();
             dexEntries.forEach((dexEntryJSON) -> {
                 var dexEntryFromList = jsonParserService.parseDexItemIntoPokemon((JSONObject) dexEntryJSON);
-                Label pokemonLabel = uiService.createPokedexListItem(pokemonDigitCount, dexEntryFromList);
+                Label pokemonLabel = uiService.createDexListItem(pokemonDigitCount, dexEntryFromList);
                 currentDexUi.add(pokemonLabel);
             });
 
-            currentDexName.set("Pokedex: " + PokedexNameMap.get(dexItem.getApiPokedexName()));
+            currentDexName.set("Pok\u00e9dex: " + DexNameMap.get(dexItem.getApiDexName()));
         } catch (IOException | InterruptedException | URISyntaxException ex) {
-            Alert errorAlert = UiService.createErrorAlert("Unable to open Pokedex", ex);
+            Alert errorAlert = UiService.createErrorAlert("Unable to open Pokédex", ex);
             errorAlert.showAndWait();
         }
     }
@@ -106,9 +106,9 @@ public class PokeApiDexService implements DexService {
     }
 
     @Override
-    public void loadDefaultPokedex(ListProperty<Label> currentDexUi, StringProperty currentDexName)
+    public void loadDefaultDex(ListProperty<Label> currentDexUi, StringProperty currentDexName)
             throws IOException, InterruptedException, URISyntaxException {
-        var requestOptions = new DexRequestOptions(DexRequestType.DexList, DefaultPokedexUrl);
+        var requestOptions = new DexRequestOptions(DexRequestType.DexList, DefaultDexUrl);
         var dexResponse = httpService.get(requestOptions);
 
         if (dexResponse != null) {
@@ -119,11 +119,11 @@ public class PokeApiDexService implements DexService {
             int pokemonDigitCount = countDigits(dexEntries.length());
             dexEntries.forEach((dexEntryJSON) -> {
                 var dexEntryFromList = jsonParserService.parseDexItemIntoPokemon((JSONObject) dexEntryJSON);
-                Label pokemonLabel = uiService.createPokedexListItem(pokemonDigitCount, dexEntryFromList);
+                Label pokemonLabel = uiService.createDexListItem(pokemonDigitCount, dexEntryFromList);
                 currentDexUi.add(pokemonLabel);
             });
 
-            currentDexName.set("Pokedex: " + PokedexNameMap.get(dexInfo.getString("name").toLowerCase()));
+            currentDexName.set("Pok\u00e9dex: " + DexNameMap.get(dexInfo.getString("name").toLowerCase()));
         }
     }
 

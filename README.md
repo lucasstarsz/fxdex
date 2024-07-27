@@ -1,15 +1,19 @@
 # FXDex
 
-FXDex is a project designed for easy access to information about Pokémon as they appear throughout the many mainstream pokemon games.
+FXDex is a project designed for easy access to information about Pokémon as they appear throughout the many mainstream
+Pokémon games.
 
 > [!WARNING]  
-> This project is still **in heavy development.** Features can and will change at any time, until a versioning cycle is defined.
+> This project is still **in heavy development.** Features can and will change at any time, until a versioning cycle is
+> defined.
 
 ## How to Run
 
-This project can be downloaded and run in a few steps from your command line, provided you have [Git](https://git-scm.com/downloads) installed, or another way to clone the project.
+This project can be downloaded and run in a few steps from your command line, provided you
+have [Git](https://git-scm.com/downloads) installed, or another way to clone the project.
 
-You may either download the [latest release](https://github.com/lucasstarsz/fxdex/releases), or use the below commands to download the project files and run it from those.
+You may either download the [latest release](https://github.com/lucasstarsz/fxdex/releases), or use the below commands
+to download the project files and run it from those.
 
 ```bash
 # 1. Clone repository
@@ -23,16 +27,18 @@ gradlew run
 ```
 
 If you want to create an executable:
+
 ```bash
 gradlew jpackage
 ```
 
 > [!NOTE]
-> You can generate an installer for the application by changing `skipInstaller` from `false` to `true`, inside the `jlink/jpacakge` task.
+> You can generate an installer for the application by changing `skipInstaller` from `false` to `true`, inside
+> the `jlink/jpacakge` task.
 
 ## Dependencies
 
-- [PokeAPI](https://pokeapi.co) for all details on Pokemon.
+- [PokéAPI](https://pokeapi.co) for all details on Pokémon.
 - [JSON in Java](https://github.com/stleary/JSON-java)
 - [Google Guice](https://github.com/google/guice)
 - [Jakarta-Inject](https://github.com/jakartaee/inject)

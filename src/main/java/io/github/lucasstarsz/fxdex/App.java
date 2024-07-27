@@ -55,7 +55,7 @@ public class App extends Application {
             try {
                 switchSceneInfo(n);
             } catch (Exception ex) {
-                Alert errorAlert = UiService.createErrorAlert("Unable to open Pokedex", ex);
+                Alert errorAlert = UiService.createErrorAlert("Unable to open Pokédex", ex);
                 errorAlert.initOwner(stage);
                 errorAlert.showAndWait();
             }

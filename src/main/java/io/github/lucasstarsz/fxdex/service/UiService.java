@@ -17,15 +17,15 @@ import java.util.List;
 
 public interface UiService {
 
-    String PokedexEntries = "Pokedex Entries:";
+    String DexEntries = "Pok\u00e9dex Entries:";
     String EggGroups = "Egg Groups:";
     Insets InfoInsets = new Insets(0, 0, 5, 0);
-    MenuItem NoDexesAvailable = new MenuItem("No Pokedexes loaded.");
+    MenuItem NoDexesAvailable = new MenuItem("No Pokédex is loaded.");
 
-    List<MenuItem> createPokedexItems(JSONObject allDexes, ListProperty<Label> currentDexUi,
-                                      StringProperty currentDexName, DexService dexService);
+    List<MenuItem> createDexItems(JSONObject dexListJSON, ListProperty<Label> currentDexUi,
+                                  StringProperty currentDexName, DexService dexService);
 
-    default Label createPokedexListItem(int pokemonDigitCount, JsonDexListItem dexEntryFromList) {
+    default Label createDexListItem(int pokemonDigitCount, JsonDexListItem dexEntryFromList) {
         String pokemonName = WordUtils.capitalize(dexEntryFromList.getApiPokemonName());
 
         // account for Porygon-Z, Tapu-Koko, Tapu-Lele, Tapu-Bulu, & Tapu-Fini

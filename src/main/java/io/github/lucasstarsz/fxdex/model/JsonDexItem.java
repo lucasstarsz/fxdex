@@ -7,20 +7,20 @@ import org.json.JSONObject;
 
 public class JsonDexItem {
 
-    private final String apiPokedexName;
-    private final String apiPokedexUrl;
+    private final String apiDexName;
+    private final String apiDexUrl;
     
     public JsonDexItem(JSONObject dex) {
-        this.apiPokedexName = dex.getString("name");
-        this.apiPokedexUrl = dex.getString("url");
+        this.apiDexName = dex.getString("name");
+        this.apiDexUrl = dex.getString("url");
     }
 
-    public String getApiPokedexName() {
-        return apiPokedexName;
+    public String getApiDexName() {
+        return apiDexName;
     }
 
-    public String getApiPokedexUrl() {
-        return apiPokedexUrl;
+    public String getApiDexUrl() {
+        return apiDexUrl;
     }
 
     @Override
@@ -31,24 +31,24 @@ public class JsonDexItem {
         JsonDexItem dexItem = (JsonDexItem) other;
 
         return new EqualsBuilder()
-                .append(apiPokedexName, dexItem.apiPokedexName)
-                .append(apiPokedexUrl, dexItem.apiPokedexUrl)
+                .append(apiDexName, dexItem.apiDexName)
+                .append(apiDexUrl, dexItem.apiDexUrl)
                 .isEquals();
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
-                .append(apiPokedexName)
-                .append(apiPokedexUrl)
+                .append(apiDexName)
+                .append(apiDexUrl)
                 .toHashCode();
     }
 
     @Override
     public String toString() {
         return new ToStringBuilder(this)
-                .append("apiPokedexName", apiPokedexName)
-                .append("apiPokedexUrl", apiPokedexUrl)
+                .append("apiDexName", apiDexName)
+                .append("apiDexUrl", apiDexUrl)
                 .toString();
     }
 }

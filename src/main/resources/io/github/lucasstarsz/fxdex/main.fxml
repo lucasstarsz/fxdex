@@ -12,9 +12,9 @@
    <children>
       <HBox alignment="CENTER_LEFT">
          <children>
-            <Label id="dexDisplayed" fx:id="currentDexDisplayed" alignment="BOTTOM_LEFT" text="No Pokedex Selected" />
+            <Label id="dexDisplayed" fx:id="currentDexDisplayed" alignment="BOTTOM_LEFT" text="No Pokédex Selected" />
             <Region HBox.hgrow="SOMETIMES" />
-            <MenuButton fx:id="dexMenu" alignment="CENTER_RIGHT" mnemonicParsing="false" text="Select Pokedex">
+            <MenuButton fx:id="dexMenu" alignment="CENTER_RIGHT" mnemonicParsing="false" text="Select Pokédex">
               <items>
               </items>
             </MenuButton>

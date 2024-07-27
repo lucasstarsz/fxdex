@@ -16,7 +16,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.github.lucasstarsz.fxdex.misc.ApiConversionTables.PokedexNameMap;
+import static io.github.lucasstarsz.fxdex.misc.ApiConversionTables.DexNameMap;
 
 public class DefaultUIService implements UiService {
 
@@ -28,16 +28,16 @@ public class DefaultUIService implements UiService {
     }
 
     @Override
-    public List<MenuItem> createPokedexItems(JSONObject allDexes, ListProperty<Label> currentDexUi,
-                                             StringProperty currentDexName, DexService dexService) {
-        return jsonParserService.parsePokedexItems(allDexes)
+    public List<MenuItem> createDexItems(JSONObject dexListJSON, ListProperty<Label> currentDexUi,
+                                         StringProperty currentDexName, DexService dexService) {
+        return jsonParserService.parseDexItems(dexListJSON)
                 .stream()
                 .map((jsonDexItem) -> {
-                    String apiPokedexName = jsonDexItem.getApiPokedexName();
-                    String uiPokedexName = PokedexNameMap.get(apiPokedexName);
+                    String apiDexName = jsonDexItem.getApiDexName();
+                    String uiDexName = DexNameMap.get(apiDexName);
 
-                    MenuItem dexItem = new MenuItem(uiPokedexName);
-                    dexItem.setOnAction((event) -> dexService.loadPokedexList(
+                    MenuItem dexItem = new MenuItem(uiDexName);
+                    dexItem.setOnAction((event) -> dexService.loadDexList(
                             currentDexUi,
                             jsonDexItem,
                             currentDexName
@@ -77,7 +77,7 @@ public class DefaultUIService implements UiService {
             eggGroupContainer.getChildren().add(eggGroupLabel);
         }
 
-        Label pokemonFlavorTexts = new Label(PokedexEntries);
+        Label pokemonFlavorTexts = new Label(DexEntries);
         pokemonFlavorTexts.setId(StyleClasses.Subtitle);
 
         var flavorTexts = dexEntryItem.getFlavorTexts();

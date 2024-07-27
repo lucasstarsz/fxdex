@@ -64,7 +64,7 @@ public class DexEntryViewModel {
     }
 
     @FXML
-    public void backToPokedex() {
+    public void backToDexView() {
         App.CurrentScene.set("main.fxml");
     }
 }

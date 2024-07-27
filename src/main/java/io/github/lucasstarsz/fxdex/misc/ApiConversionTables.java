@@ -50,7 +50,7 @@ public class ApiConversionTables {
     public static final String Kitakami = "kitakami";
     public static final String Blueberry = "blueberry";
 
-    public static final Map<String, String> PokedexNameMap = Map.ofEntries(
+    public static final Map<String, String> DexNameMap = Map.ofEntries(
             Map.entry(National, "National Dex"),
             Map.entry(Kanto, "Kanto (Red/Blue/Yellow/Green)"),
             Map.entry(OriginalJohto, "Johto (Gold/Silver/Crystal)"),
@@ -85,7 +85,7 @@ public class ApiConversionTables {
             Map.entry(Blueberry, "Paldea-Blueberry (Scarlet/Violet DLC)")
     );
 
-    public static final Map<String, String> PokedexUiToApiNameMap = Map.ofEntries(
+    public static final Map<String, String> DexUiToApiNameMap = Map.ofEntries(
             Map.entry("National Dex", National),
             Map.entry("Kanto (Red/Blue/Yellow/Green)", Kanto),
             Map.entry("Johto (Gold/Silver/Crystal)", OriginalJohto),
@@ -120,8 +120,8 @@ public class ApiConversionTables {
             Map.entry("Paldea-Blueberry (Scarlet/Violet DLC)", Blueberry)
     );
 
-    public static final Map<String, Integer> PokedexNameToIdMap = Map.ofEntries(
-            // PokeApi's pokedex list starts at index 1
+    public static final Map<String, Integer> DexNameToIdMap = Map.ofEntries(
+            // the PokéAPI pokédex list starts at index 1
             Map.entry(National, 1),
             Map.entry(Kanto, 2),
             Map.entry(OriginalJohto, 3),
@@ -131,7 +131,7 @@ public class ApiConversionTables {
             Map.entry(UpdatedJohto, 7),
             Map.entry(OriginalUnova, 8),
             Map.entry(UpdatedUnova, 9),
-            // at index nine of the PokeAPI JSON, the dex number increases its offset by 1
+            // at index nine of the PokéAPI JSON, the dex number increases its offset by 1
             // https://pokeapi.co/api/v2/pokedex/?offset=0&limit=32
             Map.entry(ConquestGallery, 11),
             Map.entry(KalosCentral, 12),

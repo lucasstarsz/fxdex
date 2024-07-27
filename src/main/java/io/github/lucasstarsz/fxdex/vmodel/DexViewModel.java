@@ -65,13 +65,13 @@ public class DexViewModel {
             App.getDexVMCache().setDexName(currentDexName.get());
         });
 
-        dexService.loadPokedexesForMenu(currentDexList, dexMenu, currentDexName);
+        dexService.loadDexesForMenu(currentDexList, dexMenu, currentDexName);
 
         var lastDexList = App.getDexVMCache().getDexList();
         var lastDexName = App.getDexVMCache().getDexName();
 
         if (lastDexList == null || lastDexList.isEmpty()) {
-            dexService.loadDefaultPokedex(currentDexList, currentDexName);
+            dexService.loadDefaultDex(currentDexList, currentDexName);
         } else {
             currentDexList.set(lastDexList);
             currentDexName.set(lastDexName);

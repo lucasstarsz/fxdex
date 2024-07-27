@@ -26,12 +26,12 @@ import javafx.scene.layout.Region;
 
 public interface DexService {
 
-    void loadPokedexesForMenu(ListProperty<Label> currentDexUi, MenuButton dexMenu, StringProperty currentDexName)
+    void loadDexesForMenu(ListProperty<Label> currentDexUi, MenuButton dexMenu, StringProperty currentDexName)
             throws IOException, InterruptedException, URISyntaxException;
 
-    void loadPokedexList(ListProperty<Label> currentDexUi, JsonDexItem dexItem, StringProperty currentDexName);
+    void loadDexList(ListProperty<Label> currentDexUi, JsonDexItem dexItem, StringProperty currentDexName);
 
-    void loadDefaultPokedex(ListProperty<Label> currentDexUi, StringProperty currentDexName)
+    void loadDefaultDex(ListProperty<Label> currentDexUi, StringProperty currentDexName)
             throws IOException, InterruptedException, URISyntaxException;
 
     void loadDexEntry(ListProperty<Region> dexEntriesList, String currentDexEntryName)

@@ -19,13 +19,13 @@ public interface JsonParserService {
     String IntroducedIn = "Introduced In: Generation ";
     String GenusNotFound = "Genus not found";
 
-    default List<JsonDexItem> parsePokedexItems(JSONObject dexesJSON) {
+    default List<JsonDexItem> parseDexItems(JSONObject dexesJSON) {
         int dexCount = dexesJSON.getInt("count");
         List<JsonDexItem> dexItems = new ArrayList<>(dexCount);
 
         for (int i = 0; i < dexCount; i++) {
-            JSONObject pokedex = dexesJSON.getJSONArray("results").getJSONObject(i);
-            JsonDexItem dexItem = new JsonDexItem(pokedex);
+            JSONObject dex = dexesJSON.getJSONArray("results").getJSONObject(i);
+            JsonDexItem dexItem = new JsonDexItem(dex);
             dexItems.add(dexItem);
         }
 

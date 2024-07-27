@@ -12,7 +12,7 @@
          <menus>
             <Menu fx:id="options" mnemonicParsing="false" text="Options">
                <items>
-                  <MenuItem fx:id="backButton" mnemonicParsing="false" onAction="#backToPokedex" text="Back to Pokedex" />
+                  <MenuItem fx:id="backButton" mnemonicParsing="false" onAction="#backToDexView" text="Back to Pokédex" />
                </items>
             </Menu>
          </menus>

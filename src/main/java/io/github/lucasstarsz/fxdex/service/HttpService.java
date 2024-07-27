@@ -26,14 +26,14 @@ import java.net.http.HttpResponse;
  */
 public interface HttpService {
 
-    /** {@returns A standard instance of a PokeApi get request, configured to get information about pokedexes.} */
+    /** {@returns A standard instance of a PokeApi get request, configured to get information about each pokédex.} */
     HttpRequest getDefaultDexRequest();
 
     /** {@returns The {@link HttpClient client} instance used for this service.} */
     HttpClient getClient();
 
     /**
-     * Creates a PokeApi pokedex get request, using the specified ID to signify which pokedex to get.
+     * Creates a PokeApi pokédex get request, using the specified ID to signify which pokédex to get.
      *
      * @param options The {@link DexRequestOptions options} used to define the parameters of the dex request.
      * @return A {@link HttpResponse response} from the server regarding the get request used.
