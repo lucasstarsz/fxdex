@@ -16,6 +16,8 @@ package io.github.lucasstarsz.fxdex.service;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
 import io.github.lucasstarsz.fxdex.misc.ApiConversionTables;
 import io.github.lucasstarsz.fxdex.misc.ApiLinks;
@@ -87,16 +89,19 @@ public class PokeApiDexService implements DexService {
             JSONArray dexEntries = dexInfo.getJSONArray("pokemon_entries");
 
             int pokemonDigitCount = countDigits(dexEntries.length());
+            List<Label> dexListItems = new ArrayList<>();
             currentDexUi.clear();
-            dexEntries.forEach((dexEntryJSON) -> {
-                var dexEntryFromList = jsonParserService.parseDexItemIntoPokemon((JSONObject) dexEntryJSON);
-                Label pokemonLabel = uiService.createDexListItem(pokemonDigitCount, dexEntryFromList);
-                currentDexUi.add(pokemonLabel);
-            });
 
+            for (var dexItemJSON : dexEntries) {
+                var dexEntryFromList = jsonParserService.parseDexItemIntoPokemon((JSONObject) dexItemJSON);
+                Label dexItemUi = uiService.createDexListItem(pokemonDigitCount, dexEntryFromList);
+                dexListItems.add(dexItemUi);
+            }
+
+            currentDexUi.setAll(dexListItems);
             currentDexName.set("Pok\u00e9dex: " + DexNameMap.get(dexItem.getApiDexName()));
         } catch (IOException | InterruptedException | URISyntaxException ex) {
-            Alert errorAlert = UiService.createErrorAlert("Unable to open Pokédex", ex);
+            Alert errorAlert = UiService.createErrorAlert("Unable to open Pok\u00e9dex", ex);
             errorAlert.showAndWait();
         }
     }
@@ -106,24 +111,35 @@ public class PokeApiDexService implements DexService {
     }
 
     @Override
-    public void loadDefaultDex(ListProperty<Label> currentDexUi, StringProperty currentDexName)
-            throws IOException, InterruptedException, URISyntaxException {
-        var requestOptions = new DexRequestOptions(DexRequestType.DexList, DefaultDexUrl);
-        var dexResponse = httpService.get(requestOptions);
+    public void loadDefaultDex(ListProperty<Label> currentDexUi, StringProperty currentDexName) {
+        try {
+            var requestOptions = new DexRequestOptions(DexRequestType.DexList, DefaultDexUrl);
+            var dexResponse = httpService.get(requestOptions);
 
-        if (dexResponse != null) {
+            if (dexResponse.statusCode() != 200) {
+                throw new IOException(
+                        dexResponse.statusCode() + ": " + dexResponse.body() + " on GET " + DefaultDexUrl
+                );
+            }
+
             JSONObject dexInfo = new JSONObject(dexResponse.body());
             JSONArray dexEntries = dexInfo.getJSONArray("pokemon_entries");
 
-            currentDexUi.clear();
             int pokemonDigitCount = countDigits(dexEntries.length());
-            dexEntries.forEach((dexEntryJSON) -> {
-                var dexEntryFromList = jsonParserService.parseDexItemIntoPokemon((JSONObject) dexEntryJSON);
-                Label pokemonLabel = uiService.createDexListItem(pokemonDigitCount, dexEntryFromList);
-                currentDexUi.add(pokemonLabel);
-            });
+            List<Label> dexListItems = new ArrayList<>();
+            currentDexUi.clear();
 
+            for (var dexItemJSON : dexEntries) {
+                var dexEntryFromList = jsonParserService.parseDexItemIntoPokemon((JSONObject) dexItemJSON);
+                Label dexItemUi = uiService.createDexListItem(pokemonDigitCount, dexEntryFromList);
+                dexListItems.add(dexItemUi);
+            }
+
+            currentDexUi.setAll(dexListItems);
             currentDexName.set("Pok\u00e9dex: " + DexNameMap.get(dexInfo.getString("name").toLowerCase()));
+        } catch (IOException | InterruptedException | URISyntaxException ex) {
+            Alert errorAlert = UiService.createErrorAlert("Unable to open Pok\u00e9dex", ex);
+            errorAlert.showAndWait();
         }
     }
 
