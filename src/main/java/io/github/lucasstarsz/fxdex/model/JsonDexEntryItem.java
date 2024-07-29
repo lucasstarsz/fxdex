@@ -6,11 +6,14 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.json.JSONObject;
 
-import java.util.List;
-import java.util.Map;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
 
 public class JsonDexEntryItem {
 
+    private final String name;
+    private final int nationalDexNumber;
     private final String genus;
     private final String generation;
     private final List<String> eggGroups;
@@ -21,6 +24,17 @@ public class JsonDexEntryItem {
         generation = jsonParserService.getGenerationIntroducedIn(dexEntry);
         eggGroups = jsonParserService.getEggGroups(dexEntry);
         flavorTexts = jsonParserService.getFlavorTexts(dexEntry);
+        name = jsonParserService.getPokemonNameFromDexEntry(dexEntry);
+        nationalDexNumber = jsonParserService.getNationalDexNumber(dexEntry);
+    }
+
+    public JsonDexEntryItem(ResultSet mainDexEntry, ResultSet eggGroups, Map<String, String> flavorTexts) throws SQLException {
+        nationalDexNumber = mainDexEntry.getInt("nationalDexNumber");
+        name = Objects.requireNonNull(mainDexEntry.getString("name"));
+        genus = Objects.requireNonNull(mainDexEntry.getString("genus"));
+        generation = Objects.requireNonNull(mainDexEntry.getString("generation"));
+        this.eggGroups = Arrays.stream(eggGroups.getString("eggGroupsString").split(",")).toList();
+        this.flavorTexts = flavorTexts;
     }
 
     public String getGenus() {
@@ -39,6 +53,14 @@ public class JsonDexEntryItem {
         return flavorTexts;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public int getNationalDexNumber() {
+        return nationalDexNumber;
+    }
+
     @Override
     public boolean equals(Object other) {
         if (this == other) return true;
@@ -47,6 +69,8 @@ public class JsonDexEntryItem {
         JsonDexEntryItem dexEntryItem = (JsonDexEntryItem) other;
 
         return new EqualsBuilder()
+                .append(name, dexEntryItem.name)
+                .append(nationalDexNumber, dexEntryItem.nationalDexNumber)
                 .append(genus, dexEntryItem.genus)
                 .append(generation, dexEntryItem.generation)
                 .append(eggGroups, dexEntryItem.eggGroups)
@@ -57,6 +81,8 @@ public class JsonDexEntryItem {
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
+                .append(name)
+                .append(nationalDexNumber)
                 .append(genus)
                 .append(generation)
                 .append(eggGroups)
@@ -67,6 +93,8 @@ public class JsonDexEntryItem {
     @Override
     public String toString() {
         return new ToStringBuilder(this)
+                .append("name", name)
+                .append("nationalDexNumber", nationalDexNumber)
                 .append("genus", genus)
                 .append("generation", generation)
                 .append("eggGroups", eggGroups)

@@ -1,7 +1,12 @@
 package io.github.lucasstarsz.fxdex.service;
 
 import com.google.inject.Inject;
+import io.github.lucasstarsz.fxdex.App;
 import io.github.lucasstarsz.fxdex.misc.StyleClasses;
+import io.github.lucasstarsz.fxdex.model.JsonDexEntryItem;
+import io.github.lucasstarsz.fxdex.model.JsonDexItem;
+import io.github.lucasstarsz.fxdex.model.JsonDexListItem;
+import io.github.lucasstarsz.fxdex.persistence.DexInfoHandler;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.StringProperty;
 import javafx.geometry.Pos;
@@ -21,35 +26,63 @@ import static io.github.lucasstarsz.fxdex.misc.ApiConversionTables.DexNameMap;
 public class DefaultUIService implements UiService {
 
     private final JsonParserService jsonParserService;
+    private final DexInfoHandler dexInfoHandler;
 
     @Inject
-    public DefaultUIService(JsonParserService jsonParserService) {
+    public DefaultUIService(JsonParserService jsonParserService, DexInfoHandler dexInfoHandler) {
         this.jsonParserService = jsonParserService;
+        this.dexInfoHandler = dexInfoHandler;
     }
 
     @Override
     public List<MenuItem> createDexItems(JSONObject dexListJSON, ListProperty<Label> currentDexUi,
                                          StringProperty currentDexName, DexService dexService) {
-        return jsonParserService.parseDexItems(dexListJSON)
-                .stream()
-                .map((jsonDexItem) -> {
-                    String apiDexName = jsonDexItem.getApiDexName();
-                    String uiDexName = DexNameMap.get(apiDexName);
+        var jsonDexItems = jsonParserService.parseDexItems(dexListJSON);
+        dexInfoHandler.saveDexItems(jsonDexItems);
 
-                    MenuItem dexItem = new MenuItem(uiDexName);
-                    dexItem.setOnAction((event) -> dexService.loadDexList(
-                            currentDexUi,
-                            jsonDexItem,
-                            currentDexName
-                    ));
-                    return dexItem;
-                }).toList();
+        List<MenuItem> itemUiList = new ArrayList<>();
+        for (JsonDexItem item : jsonDexItems) {
+            String apiDexName = item.getApiDexName();
+            String uiDexName = DexNameMap.get(apiDexName);
+
+            MenuItem dexItem = new MenuItem(uiDexName);
+            dexItem.setOnAction((event) -> dexService.loadDexList(
+                    currentDexUi,
+                    item,
+                    currentDexName
+            ));
+
+            itemUiList.add(dexItem);
+        }
+        return itemUiList;
     }
 
     @Override
-    public List<Region> createDexEntryUI(JSONObject dexEntryJSON, String currentDexEntry) {
-        var dexEntryItem = jsonParserService.getDexEntryItem(dexEntryJSON);
+    public Label createDexListItem(int pokemonDigitCount, JsonDexListItem dexEntryFromList) {
+        String pokemonName = WordUtils.capitalize(dexEntryFromList.getApiPokemonName());
 
+        // account for Porygon-Z, Tapu-Koko, Tapu-Lele, Tapu-Bulu, & Tapu-Fini
+        pokemonName = pokemonName.replaceAll("-z", "-Z");
+        pokemonName = pokemonName.replaceAll("-koko", "-Koko");
+        pokemonName = pokemonName.replaceAll("-lele", "-Lele");
+        pokemonName = pokemonName.replaceAll("-bulu", "-Bulu");
+        pokemonName = pokemonName.replaceAll("-fini", "-Fini");
+
+        int dexNumberDigitCount = countDigits(dexEntryFromList.getDexNumber());
+        String dexNumberString = "0".repeat(pokemonDigitCount - dexNumberDigitCount) + dexEntryFromList.getDexNumber();
+
+        Label pokemonLabel = new Label(dexNumberString + ": " + pokemonName);
+        pokemonLabel.onMousePressedProperty().set((event) -> {
+            App.CurrentDexEntry.set(dexEntryFromList.getApiPokemonName());
+            App.CurrentDexNumber.set(dexInfoHandler.loadPokemonNumber(dexEntryFromList.getApiPokemonName()));
+            App.CurrentScene.set("pokedexEntry.fxml");
+        });
+
+        return pokemonLabel;
+    }
+
+    @Override
+    public List<Region> createDexEntryUI(JsonDexEntryItem dexEntryItem, String currentDexEntry) {
         Label pokemonName = new Label(currentDexEntry);
         pokemonName.setId(StyleClasses.PokemonName);
         pokemonName.setText(pokemonName.getText().toUpperCase());

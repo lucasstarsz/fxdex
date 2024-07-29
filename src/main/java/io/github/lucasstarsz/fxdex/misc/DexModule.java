@@ -20,12 +20,15 @@ import java.util.concurrent.Executors;
 import com.google.inject.AbstractModule;
 import com.google.inject.name.Names;
 
+import io.github.lucasstarsz.fxdex.persistence.DexInfoHandler;
+import io.github.lucasstarsz.fxdex.persistence.SqlDexInfoHandler;
 import io.github.lucasstarsz.fxdex.service.*;
 
 public class DexModule extends AbstractModule {
 
     @Override
     protected void configure() {
+        bind(DexInfoHandler.class).toInstance(new SqlDexInfoHandler());
         bind(JsonParserService.class).to(PokeApiJsonParserService.class);
         bind(UiService.class).to(DefaultUIService.class);
         bind(DexService.class).to(PokeApiDexService.class);

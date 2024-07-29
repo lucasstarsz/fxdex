@@ -34,6 +34,7 @@ dependencies {
     implementation("jakarta.inject:jakarta.inject-api:2.0.1")
     implementation("io.github.mkpaz:atlantafx-base:2.0.1")
     implementation("org.apache.commons:commons-text:1.12.0")
+    implementation("org.xerial:sqlite-jdbc:3.46.0.0")
 }
 
 javafx {
@@ -69,6 +70,8 @@ val distributionName = "FXDex ${version}"
 jlink {
     addExtraDependencies("javafx")
     options.addAll("--strip-debug", "--compress", "2", "--no-header-files", "--no-man-pages")
+    
+    
 
     launcher {
         name = distributionName

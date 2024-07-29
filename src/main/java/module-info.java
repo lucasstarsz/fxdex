@@ -31,4 +31,6 @@ open module fxdex.main {
     // required for Guice to function.
     requires jakarta.inject;
     requires org.apache.commons.lang3;
+    requires java.sql;
+    requires org.xerial.sqlitejdbc;
 }

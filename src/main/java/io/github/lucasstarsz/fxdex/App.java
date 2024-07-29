@@ -15,6 +15,8 @@ limitations under the License. */
 package io.github.lucasstarsz.fxdex;
 
 import java.io.IOException;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 
@@ -22,14 +24,13 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 
 import atlantafx.base.theme.PrimerDark;
+import io.github.lucasstarsz.fxdex.database.DatabaseSetup;
 import io.github.lucasstarsz.fxdex.misc.DexModule;
 import io.github.lucasstarsz.fxdex.misc.DexViewModelCache;
+import io.github.lucasstarsz.fxdex.misc.FileLinks;
 import io.github.lucasstarsz.fxdex.service.UiService;
 import javafx.application.Application;
-import javafx.beans.property.Property;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -43,6 +44,7 @@ public class App extends Application {
 
     public static final StringProperty CurrentDexEntry = new SimpleStringProperty();
     public static final StringProperty CurrentScene = new SimpleStringProperty();
+    public static final IntegerProperty CurrentDexNumber = new SimpleIntegerProperty();
     public static final Property<ExecutorService> DexThreadHandler = new SimpleObjectProperty<>();
     private static final DexViewModelCache dexVMCache = new DexViewModelCache();
 
@@ -50,24 +52,45 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) {
-        Application.setUserAgentStylesheet(new PrimerDark().getUserAgentStylesheet());
-        CurrentScene.addListener((c, o, n) -> {
-            try {
-                switchSceneInfo(n);
-            } catch (Exception ex) {
-                Alert errorAlert = UiService.createErrorAlert("Unable to open Pokédex", ex);
-                errorAlert.initOwner(stage);
+        try {
+
+            try (var dbConnection = DriverManager.getConnection(FileLinks.JDBCConnectionUrl);
+                 var statementObj = dbConnection.createStatement()) {
+                var meta = dbConnection.getMetaData();
+                System.out.println("The driver name is " + meta.getDriverName());
+                System.out.println("Setting up...");
+
+                for (String sqlStatement : DatabaseSetup.getStartupStatements()) {
+                    System.out.println(sqlStatement);
+                    statementObj.execute(sqlStatement);
+                }
+            } catch (SQLException e) {
+                Alert errorAlert = UiService.createErrorAlert("Unable to open Pokédex Database", e);
                 errorAlert.showAndWait();
             }
-        });
 
-        this.primaryStage = stage;
+            Application.setUserAgentStylesheet(new PrimerDark().getUserAgentStylesheet());
+            CurrentScene.addListener((c, o, n) -> {
+                try {
+                    switchSceneInfo(n);
+                } catch (Exception ex) {
+                    Alert errorAlert = UiService.createErrorAlert("Unable to open Pokédex", ex);
+                    ex.printStackTrace();
+                    errorAlert.initOwner(stage);
+                    errorAlert.showAndWait();
+                }
+            });
 
-        Scene scene = new Scene(DefaultParent, 640, 480);
-        stage.setScene(scene);
+            this.primaryStage = stage;
 
-        CurrentScene.set("main.fxml");
-        stage.show();
+            Scene scene = new Scene(DefaultParent, 640, 480);
+            stage.setScene(scene);
+
+            CurrentScene.set("main.fxml");
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

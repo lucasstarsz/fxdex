@@ -21,10 +21,7 @@ import com.google.inject.Inject;
 
 import io.github.lucasstarsz.fxdex.App;
 import io.github.lucasstarsz.fxdex.service.DexService;
-import javafx.beans.property.ListProperty;
-import javafx.beans.property.SimpleListProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.layout.Region;
@@ -37,6 +34,7 @@ public class DexEntryViewModel {
 
     private final DexService dexService;
     private final StringProperty currentDexEntryName;
+    private final IntegerProperty currentDexEntryNumber;
     private final ListProperty<Region> dexEntriesList;
 
     @Inject
@@ -44,7 +42,9 @@ public class DexEntryViewModel {
         this.dexService = dexService;
 
         currentDexEntryName = new SimpleStringProperty();
+        currentDexEntryNumber = new SimpleIntegerProperty();
         currentDexEntryName.bind(App.CurrentDexEntry);
+        currentDexEntryNumber.bind(App.CurrentDexNumber);
 
         dexEntriesList = new SimpleListProperty<>(FXCollections.observableArrayList());
     }
@@ -52,7 +52,7 @@ public class DexEntryViewModel {
     @FXML
     public void initialize() throws IOException, InterruptedException, URISyntaxException {
         dexEntriesList.addListener((c, o, n) -> prepDexEntriesOnChange());
-        dexService.loadDexEntry(dexEntriesList, currentDexEntryName.get());
+        dexService.loadDexEntry(dexEntriesList, currentDexEntryName.get(), currentDexEntryNumber.get());
     }
 
     private void prepDexEntriesOnChange() {

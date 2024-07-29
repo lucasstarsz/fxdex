@@ -1,6 +1,6 @@
 package io.github.lucasstarsz.fxdex.service;
 
-import io.github.lucasstarsz.fxdex.App;
+import io.github.lucasstarsz.fxdex.model.JsonDexEntryItem;
 import io.github.lucasstarsz.fxdex.model.JsonDexListItem;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.StringProperty;
@@ -10,7 +10,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.Region;
 import javafx.stage.Modality;
-import org.apache.commons.text.WordUtils;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -25,33 +24,13 @@ public interface UiService {
     List<MenuItem> createDexItems(JSONObject dexListJSON, ListProperty<Label> currentDexUi,
                                   StringProperty currentDexName, DexService dexService);
 
-    default Label createDexListItem(int pokemonDigitCount, JsonDexListItem dexEntryFromList) {
-        String pokemonName = WordUtils.capitalize(dexEntryFromList.getApiPokemonName());
-
-        // account for Porygon-Z, Tapu-Koko, Tapu-Lele, Tapu-Bulu, & Tapu-Fini
-        pokemonName = pokemonName.replaceAll("-z", "-Z");
-        pokemonName = pokemonName.replaceAll("-koko", "-Koko");
-        pokemonName = pokemonName.replaceAll("-lele", "-Lele");
-        pokemonName = pokemonName.replaceAll("-bulu", "-Bulu");
-        pokemonName = pokemonName.replaceAll("-fini", "-Fini");
-
-        int dexNumberDigitCount = countDigits(dexEntryFromList.getDexNumber());
-        String dexNumberString = "0".repeat(pokemonDigitCount - dexNumberDigitCount) + dexEntryFromList.getDexNumber();
-
-        Label pokemonLabel = new Label(dexNumberString + ": " + pokemonName);
-        pokemonLabel.onMousePressedProperty().set((event) -> {
-            App.CurrentDexEntry.set(dexEntryFromList.getApiPokemonName());
-            App.CurrentScene.set("pokedexEntry.fxml");
-        });
-
-        return pokemonLabel;
-    }
+    Label createDexListItem(int pokemonDigitCount, JsonDexListItem dexEntryFromList);
 
     default int countDigits(int n) {
         return String.valueOf(n).length();
     }
 
-    List<Region> createDexEntryUI(JSONObject dexEntryJSON, String currentDexEntry);
+    List<Region> createDexEntryUI(JsonDexEntryItem dexEntryJSON, String currentDexEntry);
 
     static Alert createErrorAlert(String customErrorMessage, Exception e) {
         Alert errorAlert = new Alert(Alert.AlertType.ERROR);

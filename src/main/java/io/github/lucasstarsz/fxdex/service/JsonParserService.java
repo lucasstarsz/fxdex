@@ -97,4 +97,12 @@ public interface JsonParserService {
 
         return flavorTexts;
     }
+
+    default String getPokemonNameFromDexEntry(JSONObject dexEntry) {
+        return dexEntry.getString("name");
+    }
+
+    default int getNationalDexNumber(JSONObject dexEntry) {
+        return dexEntry.getJSONArray("pokedex_numbers").getJSONObject(0).getInt("entry_number");
+    }
 }

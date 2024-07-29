@@ -9,7 +9,7 @@ public class JsonDexItem {
 
     private final String apiDexName;
     private final String apiDexUrl;
-    
+
     public JsonDexItem(JSONObject dex) {
         this.apiDexName = dex.getString("name");
         this.apiDexUrl = dex.getString("url");

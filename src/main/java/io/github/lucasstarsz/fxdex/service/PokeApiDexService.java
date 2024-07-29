@@ -21,7 +21,9 @@ import java.util.List;
 
 import io.github.lucasstarsz.fxdex.misc.ApiConversionTables;
 import io.github.lucasstarsz.fxdex.misc.ApiLinks;
+import io.github.lucasstarsz.fxdex.model.JsonDexEntryItem;
 import io.github.lucasstarsz.fxdex.model.JsonDexItem;
+import io.github.lucasstarsz.fxdex.persistence.DexInfoHandler;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -40,17 +42,19 @@ import static io.github.lucasstarsz.fxdex.service.UiService.NoDexesAvailable;
 public class PokeApiDexService implements DexService {
 
     public static final String DefaultDexUrl = ApiLinks.DexUrl
-            + ApiConversionTables.DexNameToIdMap.get(ApiConversionTables.Kanto);
+            + ApiConversionTables.DexNameToIdMap.get(ApiConversionTables.National);
 
     private final HttpService httpService;
     private final UiService uiService;
     private final JsonParserService jsonParserService;
+    private final DexInfoHandler dexInfoHandler;
 
     @Inject
-    public PokeApiDexService(HttpService httpService, UiService uiService, JsonParserService jsonParserService) {
+    public PokeApiDexService(HttpService httpService, UiService uiService, JsonParserService jsonParserService, DexInfoHandler dexInfoHandler) {
         this.httpService = httpService;
         this.uiService = uiService;
         this.jsonParserService = jsonParserService;
+        this.dexInfoHandler = dexInfoHandler;
     }
 
     @Override
@@ -131,6 +135,8 @@ public class PokeApiDexService implements DexService {
 
             for (var dexItemJSON : dexEntries) {
                 var dexEntryFromList = jsonParserService.parseDexItemIntoPokemon((JSONObject) dexItemJSON);
+                dexInfoHandler.saveDexPokemon(dexEntryFromList);
+
                 Label dexItemUi = uiService.createDexListItem(pokemonDigitCount, dexEntryFromList);
                 dexListItems.add(dexItemUi);
             }
@@ -144,13 +150,26 @@ public class PokeApiDexService implements DexService {
     }
 
     @Override
-    public void loadDexEntry(ListProperty<Region> dexEntriesList, String currentDexEntryName)
+    public void loadDexEntry(ListProperty<Region> dexEntriesList, String currentDexEntryName, int nationalDexNumber)
             throws IOException, InterruptedException, URISyntaxException {
+        JsonDexEntryItem dexEntryItem;
         var requestOptions = new DexRequestOptions(DexRequestType.DexEntry, currentDexEntryName);
-        var dexResponse = httpService.get(requestOptions);
 
-        JSONObject dexEntry = new JSONObject(dexResponse.body());
-        var dexEntryUI = uiService.createDexEntryUI(dexEntry, currentDexEntryName);
+        try {
+            dexEntryItem = dexInfoHandler.loadDexEntry(nationalDexNumber);
+            System.out.println(dexEntryItem);
+        } catch (Exception e) {
+            System.err.println("Unable to load from database: " + e.getMessage());
+            System.err.println("Loading from PokeApi instead...");
+
+            var dexResponse = httpService.get(requestOptions);
+            JSONObject dexEntry = new JSONObject(dexResponse.body());
+            dexEntryItem = jsonParserService.getDexEntryItem(dexEntry);
+        }
+
+        var dexEntryUI = uiService.createDexEntryUI(dexEntryItem, currentDexEntryName);
         dexEntriesList.setAll(dexEntryUI);
+
+        dexInfoHandler.saveDexEntry(dexEntryItem, requestOptions.linkProperty().getValue().toString());
     }
 }

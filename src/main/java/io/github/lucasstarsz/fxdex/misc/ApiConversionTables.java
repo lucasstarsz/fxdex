@@ -1,5 +1,6 @@
 package io.github.lucasstarsz.fxdex.misc;
 
+import java.util.List;
 import java.util.Map;
 
 public class ApiConversionTables {
@@ -49,6 +50,52 @@ public class ApiConversionTables {
     public static final String Paldea = "paldea";
     public static final String Kitakami = "kitakami";
     public static final String Blueberry = "blueberry";
+
+    public static final List<String> GameVersions = List.of(
+            "red",
+            "blue",
+            "yellow",
+            "gold",
+            "silver",
+            "crystal",
+            "ruby",
+            "sapphire",
+            "emerald",
+            "firered",
+            "leafgreen",
+            "diamond",
+            "pearl",
+            "platinum",
+            "heartgold",
+            "soulsilver",
+            "black",
+            "white",
+            "colosseum",
+            "xd",
+            "black-2",
+            "white-2",
+            "x",
+            "y",
+            "omega-ruby",
+            "alpha-sapphire",
+            "sun",
+            "moon",
+            "ultra-sun",
+            "ultra-moon",
+            "lets-go-pikachu",
+            "lets-go-eevee",
+            "sword",
+            "shield",
+            "the-isle-of-armor",
+            "the-crown-tundra",
+            "brilliant-diamond",
+            "shining-pearl",
+            "legends-arceus",
+            "scarlet",
+            "violet",
+            "the-teal-mask",
+            "the-indigo-disk"
+    );
 
     public static final Map<String, String> DexNameMap = Map.ofEntries(
             Map.entry(National, "National Dex"),
