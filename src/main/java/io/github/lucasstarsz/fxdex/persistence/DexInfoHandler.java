@@ -14,7 +14,7 @@ public interface DexInfoHandler {
 
     JsonDexEntryItem loadDexEntry(int nationalDexNumber) throws SQLException;
 
-    void saveDexPokemon(JsonDexListItem dexEntryFromList);
+    void saveDexPokemon(List<JsonDexListItem> dexEntries);
 
     int loadPokemonNumber(String apiPokemonName);
 }

@@ -23,6 +23,7 @@ import io.github.lucasstarsz.fxdex.misc.ApiConversionTables;
 import io.github.lucasstarsz.fxdex.misc.ApiLinks;
 import io.github.lucasstarsz.fxdex.model.JsonDexEntryItem;
 import io.github.lucasstarsz.fxdex.model.JsonDexItem;
+import io.github.lucasstarsz.fxdex.model.JsonDexListItem;
 import io.github.lucasstarsz.fxdex.persistence.DexInfoHandler;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -131,11 +132,12 @@ public class PokeApiDexService implements DexService {
 
             int pokemonDigitCount = countDigits(dexEntries.length());
             List<Label> dexListItems = new ArrayList<>();
+            List<JsonDexListItem> dexEntriesFromList = new ArrayList<>();
             currentDexUi.clear();
 
             for (var dexItemJSON : dexEntries) {
                 var dexEntryFromList = jsonParserService.parseDexItemIntoPokemon((JSONObject) dexItemJSON);
-                dexInfoHandler.saveDexPokemon(dexEntryFromList);
+                dexEntriesFromList.add(dexEntryFromList);
 
                 Label dexItemUi = uiService.createDexListItem(pokemonDigitCount, dexEntryFromList);
                 dexListItems.add(dexItemUi);
@@ -143,6 +145,7 @@ public class PokeApiDexService implements DexService {
 
             currentDexUi.setAll(dexListItems);
             currentDexName.set("Pok\u00e9dex: " + DexNameMap.get(dexInfo.getString("name").toLowerCase()));
+            dexInfoHandler.saveDexPokemon(dexEntriesFromList);
         } catch (IOException | InterruptedException | URISyntaxException ex) {
             Alert errorAlert = UiService.createErrorAlert("Unable to open Pok\u00e9dex", ex);
             errorAlert.showAndWait();
