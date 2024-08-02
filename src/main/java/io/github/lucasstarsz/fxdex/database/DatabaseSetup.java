@@ -4,23 +4,33 @@ public class DatabaseSetup {
 
     public static final String CreateDexes = """
             CREATE TABLE IF NOT EXISTS `dexes` (
-                `apiName` tinytext PRIMARY KEY NOT NULL,
+                `apiDexName` tinytext PRIMARY KEY NOT NULL,
                 `uiName` tinytext NOT NULL,
                 `apiUrl` tinytext NOT NULL
             );""";
 
-    public static final String CreateDexPokemon = """
-            CREATE TABLE IF NOT EXISTS `dexPokemon` (
+    public static final String CreateNatDexToName = """
+            CREATE TABLE IF NOT EXISTS `natDexToName` (
                 `nationalDexNumber` int PRIMARY KEY NOT NULL,
-                `apiDexName` tinytext UNIQUE NOT NULL
+                `apiMonName` tinytext UNIQUE NOT NULL
             );""";
 
-    public static final String CreatePokemonNamesToDex = """
-            CREATE TABLE IF NOT EXISTS `pokemonNamesToDex` (
-                `apiDexName` tinytext PRIMARY KEY NOT NULL,
+    public static final String CreateNameToNatDex = """
+            CREATE TABLE IF NOT EXISTS `nameToNatDex` (
+                `apiMonName` tinytext PRIMARY KEY NOT NULL,
                 `nationalDexNumber` int UNIQUE NOT NULL,
-                FOREIGN KEY (`apiDexName`) REFERENCES `dexPokemon` (`apiDexName`),
-                FOREIGN KEY (`nationalDexNumber`) REFERENCES `dexPokemon` (`nationalDexNumber`)
+                FOREIGN KEY (`apiMonName`) REFERENCES `pokemonByDex` (`apiMonName`),
+                FOREIGN KEY (`nationalDexNumber`) REFERENCES `natDexToName` (`nationalDexNumber`)
+            );""";
+
+    public static final String CreatePokemonNamesByDex = """
+            CREATE TABLE IF NOT EXISTS `pokemonByDex` (
+                `apiDexName` tinytext NOT NULL,
+                `apiMonName` tinytext NOT NULL,
+                `dexNumber` int NOT NULL,
+                PRIMARY KEY(apiDexName, apiMonName),
+                FOREIGN KEY (`apiDexName`) REFERENCES `dexes` (`apiDexName`),
+                FOREIGN KEY (`apiMonName`) REFERENCES `natDexToName` (`apiMonName`)
             );""";
 
     public static final String CreateDexEntries = """
@@ -30,8 +40,8 @@ public class DatabaseSetup {
                 `speciesUrl` tinytext NOT NULL,
                 `genus` tinytext NOT NULL,
                 `generation` int NOT NULL,
-                FOREIGN KEY (`nationalDexNumber`) REFERENCES `dexPokemon` (`nationalDexNumber`),
-                FOREIGN KEY (`name`) REFERENCES `dexPokemon` (`apiDexName`)
+                FOREIGN KEY (`nationalDexNumber`) REFERENCES `natDexToName` (`nationalDexNumber`),
+                FOREIGN KEY (`name`) REFERENCES `natDexToName` (`apiMonName`)
             );""";
 
     public static final String CreateEggGroups = """
@@ -48,14 +58,15 @@ public class DatabaseSetup {
                 `regionText` tinytext NOT NULL,
                 PRIMARY KEY (`nationalDexNumber`, `region`),
                 FOREIGN KEY (`nationalDexNumber`) REFERENCES `dexEntries` (`nationalDexNumber`),
-                FOREIGN KEY (`region`) REFERENCES `dexes` (`apiName`)
+                FOREIGN KEY (`region`) REFERENCES `dexes` (`apiDexName`)
             );""";
 
     public static String[] getStartupStatements() {
         return new String[]{
                 CreateDexes,
-                CreateDexPokemon,
-                CreatePokemonNamesToDex,
+                CreateNatDexToName,
+                CreateNameToNatDex,
+                CreatePokemonNamesByDex,
                 CreateDexEntries,
                 CreateEggGroups,
                 CreateFlavorTexts

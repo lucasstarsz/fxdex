@@ -11,20 +11,18 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class SqlDexInfoHandler implements DexInfoHandler {
 
     private static final String SaveDexPokemon = """
-            INSERT INTO dexPokemon(nationalDexNumber, apiDexName) VALUES (?, ?)
+            INSERT INTO natDexToName(nationalDexNumber, apiMonName) VALUES (?, ?)
             ON CONFLICT(nationalDexNumber) DO NOTHING
             """;
 
     private static final String SaveDexPokemonName = """
-            INSERT INTO pokemonNamesToDex(apiDexName, nationalDexNumber) VALUES (?, ?)
-            ON CONFLICT(apiDexName) DO NOTHING
+            INSERT INTO nameToNatDex(apiMonName, nationalDexNumber) VALUES (?, ?)
+            ON CONFLICT(apiMonName) DO NOTHING
             """;
 
     private static final String SaveDexItems = """
@@ -60,43 +58,107 @@ public class SqlDexInfoHandler implements DexInfoHandler {
             """;
 
     private static final String LoadDexPokemonByName = """
-            SELECT * FROM pokemonNamesToDex WHERE pokemonNamesToDex.apiDexName=(?)
+            SELECT * FROM nameToNatDex WHERE nameToNatDex.apiMonName=(?)
+            """;
+
+    private static final String LoadDexList = """
+            SELECT * FROM pokemonByDex WHERE pokemonByDex.apiDexName=(?) ORDER BY pokemonByDex.dexNumber ASC
+            """;
+
+    private static final String LoadDexItem = """
+            SELECT * FROM dexes WHERE dexes.apiDexName=(?)
             """;
 
     @Override
-    public void saveDexPokemon(List<JsonDexListItem> dexEntries) {
-        String dexToNameQuery = SqlDexInfoHandler.createInsertQuery(QueryType.SaveDexToName, dexEntries.size());
-        String nameToDexQuery = SqlDexInfoHandler.createInsertQuery(QueryType.SaveNameToDex, dexEntries.size());
+    public void saveDexList(String apiDexName, List<JsonDexListItem> dexList) {
+        String monByDexQuery = SqlDexInfoHandler.createInsertQuery(QueryType.SaveDexList, dexList.size());
 
-        System.out.println(dexToNameQuery);
+        try (var dbConnection = DriverManager.getConnection(FileLinks.JDBCConnectionUrl);
+             var monByDexStatement = dbConnection.prepareStatement(monByDexQuery)) {
+
+            int monByDexCount = QueryType.SaveDexList.getData().length;
+            for (int i = 1; i <= dexList.size() * monByDexCount; i += monByDexCount) {
+                int itemIndex = ((i + monByDexCount - 1) / monByDexCount) - 1;
+                JsonDexListItem dexEntryFromList = dexList.get(itemIndex);
+                monByDexStatement.setString(i, apiDexName);
+                monByDexStatement.setString(i + 1, dexEntryFromList.getApiPokemonName());
+                monByDexStatement.setInt(i + 2, dexEntryFromList.getDexNumber());
+            }
+
+            System.out.println("mons by dex list:\n" + monByDexStatement.toString());
+            monByDexStatement.executeUpdate();
+        } catch (SQLException e) {
+            UiService.createErrorAlert("Unable to save pok\u00e9mon", e).showAndWait();
+        }
+    }
+
+    @Override
+    public void saveNatDexList(List<JsonDexListItem> dexList) {
+        String dexToNameQuery = SqlDexInfoHandler.createInsertQuery(QueryType.SaveDexToName, dexList.size());
+        String nameToDexQuery = SqlDexInfoHandler.createInsertQuery(QueryType.SaveNameToDex, dexList.size());
+
         try (var dbConnection = DriverManager.getConnection(FileLinks.JDBCConnectionUrl);
              var dexToNameStatement = dbConnection.prepareStatement(dexToNameQuery);
              var nameToDexStatement = dbConnection.prepareStatement(nameToDexQuery)) {
 
             int dexToNameCount = QueryType.SaveDexToName.getData().length;
-
-            for (int i = 1; i <= dexEntries.size() * dexToNameCount; i += dexToNameCount) {
+            for (int i = 1; i <= dexList.size() * dexToNameCount; i += dexToNameCount) {
                 int itemIndex = ((i + dexToNameCount - 1) / dexToNameCount) - 1;
-                JsonDexListItem dexEntryFromList = dexEntries.get(itemIndex);
+                JsonDexListItem dexEntryFromList = dexList.get(itemIndex);
                 dexToNameStatement.setInt(i, dexEntryFromList.getDexNumber());
                 dexToNameStatement.setString(i + 1, dexEntryFromList.getApiPokemonName());
             }
 
+            System.out.println("dex to name list:\n" + dexToNameStatement.toString());
             dexToNameStatement.executeUpdate();
 
             int nameToDexCount = QueryType.SaveDexToName.getData().length;
-
-            System.out.println(nameToDexQuery);
-            for (int i = 1; i <= dexEntries.size() * nameToDexCount; i += nameToDexCount) {
-                int itemIndex = ((i + dexToNameCount - 1) / dexToNameCount) - 1;
-                JsonDexListItem dexEntryFromList = dexEntries.get(itemIndex);
+            for (int i = 1; i <= dexList.size() * nameToDexCount; i += nameToDexCount) {
+                int itemIndex = ((i + nameToDexCount - 1) / nameToDexCount) - 1;
+                JsonDexListItem dexEntryFromList = dexList.get(itemIndex);
                 nameToDexStatement.setString(i, dexEntryFromList.getApiPokemonName());
                 nameToDexStatement.setInt(i + 1, dexEntryFromList.getDexNumber());
             }
 
+            System.out.println("name to dex list:\n" + nameToDexStatement.toString());
             nameToDexStatement.executeUpdate();
         } catch (SQLException e) {
             UiService.createErrorAlert("Unable to save pok\u00e9mon", e).showAndWait();
+        }
+    }
+
+    @Override
+    public List<JsonDexListItem> loadDexList(String apiDexName) {
+        try (var dbConnection = DriverManager.getConnection(FileLinks.JDBCConnectionUrl);
+             var loadDexListStatement = dbConnection.prepareStatement(LoadDexList)) {
+            System.out.println("search for " + apiDexName);
+            loadDexListStatement.setString(1, apiDexName);
+            var result = loadDexListStatement.executeQuery();
+
+            List<JsonDexListItem> dexItems = new ArrayList<>();
+            System.out.println("finding...");
+            do {
+                System.out.println("found 1");
+                dexItems.add(new JsonDexListItem(result));
+            } while (result.next());
+
+            return dexItems;
+        } catch (SQLException e) {
+            UiService.createErrorAlert("Unable to load pok\u00e9mon", e).showAndWait();
+        }
+
+        return List.of();
+    }
+
+    @Override
+    public JsonDexItem loadDexItem(String apiDexName) throws SQLException {
+        try (var dbConnection = DriverManager.getConnection(FileLinks.JDBCConnectionUrl);
+             var loadDexNameStatement = dbConnection.prepareStatement(LoadDexItem)) {
+            System.out.println("search for " + apiDexName);
+            loadDexNameStatement.setString(1, apiDexName);
+            var result = loadDexNameStatement.executeQuery();
+
+            return new JsonDexItem(result);
         }
     }
 
@@ -117,7 +179,7 @@ public class SqlDexInfoHandler implements DexInfoHandler {
     }
 
     @Override
-    public void saveDexItems(List<JsonDexItem> jsonDexItems) {
+    public void saveDexMenuList(List<JsonDexItem> jsonDexItems) {
         String saveDexItems = SqlDexInfoHandler.createInsertQuery(QueryType.SaveDexItems, jsonDexItems.size());
         try (var dbConnection = DriverManager.getConnection(FileLinks.JDBCConnectionUrl);
              var saveDexItemsStatement = dbConnection.prepareStatement(saveDexItems)) {
@@ -129,7 +191,7 @@ public class SqlDexInfoHandler implements DexInfoHandler {
                 int itemIndex = ((i + saveDexItemsCount - 1) / saveDexItemsCount) - 1;
                 JsonDexItem jsonDexItem = jsonDexItems.get(itemIndex);
                 saveDexItemsStatement.setString(i, jsonDexItem.getApiDexName());
-                saveDexItemsStatement.setString(i + 1, ApiConversionTables.DexNameMap.get(jsonDexItem.getApiDexName().toLowerCase()));
+                saveDexItemsStatement.setString(i + 1, Objects.requireNonNullElse(jsonDexItem.getUiName(), ApiConversionTables.DexNameMap.get(jsonDexItem.getApiDexName().toLowerCase())));
                 saveDexItemsStatement.setString(i + 2, jsonDexItem.getApiDexUrl());
             }
 

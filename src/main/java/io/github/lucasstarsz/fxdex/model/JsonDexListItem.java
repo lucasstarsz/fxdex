@@ -5,6 +5,10 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.json.JSONObject;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Objects;
+
 public class JsonDexListItem {
     private final int dexNumber;
     private final String apiPokemonName;
@@ -13,6 +17,12 @@ public class JsonDexListItem {
         this.dexNumber = dexEntryFromInfoList.getInt("entry_number");
         JSONObject pokemonSpecies = dexEntryFromInfoList.getJSONObject("pokemon_species");
         this.apiPokemonName = pokemonSpecies.getString("name");
+    }
+
+    public JsonDexListItem(ResultSet dexItemFromDatabase) throws SQLException {
+        this.apiPokemonName = Objects.requireNonNull(dexItemFromDatabase.getString("apiMonName"));
+        this.dexNumber = dexItemFromDatabase.getInt("dexNumber");
+        System.out.println(this);
     }
 
     public int getDexNumber() {

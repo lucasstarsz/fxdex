@@ -5,22 +5,37 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.json.JSONObject;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 public class JsonDexItem {
 
-    private final String apiDexName;
+    private final String apiMonName;
     private final String apiDexUrl;
+    private final String uiName;
 
     public JsonDexItem(JSONObject dex) {
-        this.apiDexName = dex.getString("name");
+        this.apiMonName = dex.getString("name");
         this.apiDexUrl = dex.getString("url");
+        this.uiName = null;
+    }
+
+    public JsonDexItem(ResultSet dexSql) throws SQLException {
+        this.apiMonName = dexSql.getString("apiDexName");
+        this.uiName = dexSql.getString("uiName");
+        this.apiDexUrl = dexSql.getString("apiUrl");
     }
 
     public String getApiDexName() {
-        return apiDexName;
+        return apiMonName;
     }
 
     public String getApiDexUrl() {
         return apiDexUrl;
+    }
+
+    public String getUiName() {
+        return uiName;
     }
 
     @Override
@@ -31,7 +46,7 @@ public class JsonDexItem {
         JsonDexItem dexItem = (JsonDexItem) other;
 
         return new EqualsBuilder()
-                .append(apiDexName, dexItem.apiDexName)
+                .append(apiMonName, dexItem.apiMonName)
                 .append(apiDexUrl, dexItem.apiDexUrl)
                 .isEquals();
     }
@@ -39,7 +54,7 @@ public class JsonDexItem {
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
-                .append(apiDexName)
+                .append(apiMonName)
                 .append(apiDexUrl)
                 .toHashCode();
     }
@@ -47,7 +62,8 @@ public class JsonDexItem {
     @Override
     public String toString() {
         return new ToStringBuilder(this)
-                .append("apiDexName", apiDexName)
+                .append("apiMonName", apiMonName)
+                .append("uiName", uiName)
                 .append("apiDexUrl", apiDexUrl)
                 .toString();
     }

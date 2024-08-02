@@ -25,6 +25,7 @@ import io.github.lucasstarsz.fxdex.model.JsonDexEntryItem;
 import io.github.lucasstarsz.fxdex.model.JsonDexItem;
 import io.github.lucasstarsz.fxdex.model.JsonDexListItem;
 import io.github.lucasstarsz.fxdex.persistence.DexInfoHandler;
+import javafx.scene.control.MenuItem;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -61,13 +62,14 @@ public class PokeApiDexService implements DexService {
     @Override
     public void loadDexesForMenu(ListProperty<Label> currentDexUi, MenuButton dexMenu, StringProperty currentDexName)
             throws IOException, InterruptedException, URISyntaxException {
+
         var dexesResponse = httpService.get(DexRequestOptions.defaultOptions());
         if (dexesResponse.statusCode() != 200) {
             dexMenu.getItems().add(NoDexesAvailable);
             throw new IOException(dexesResponse.statusCode() + ": " + dexesResponse.body());
         }
 
-        var menuItems = uiService.createDexItems(
+        List<MenuItem> menuItems = uiService.createDexItems(
                 new JSONObject(dexesResponse.body()),
                 currentDexUi,
                 currentDexName,
@@ -79,32 +81,58 @@ public class PokeApiDexService implements DexService {
 
     @Override
     public void loadDexList(ListProperty<Label> currentDexUi, JsonDexItem dexItem, StringProperty currentDexName) {
+        List<Label> dexListItems = new ArrayList<>();
+        List<JsonDexListItem> dexEntries = new ArrayList<>();
+
         try {
-            DexRequestOptions dexRequestOptions = new DexRequestOptions(DexRequestType.DexList, dexItem.getApiDexUrl());
-            var dexResponse = httpService.get(dexRequestOptions);
+            try {
+                dexEntries = dexInfoHandler.loadDexList(dexItem.getApiDexName());
+                JsonDexItem dexInfo = dexInfoHandler.loadDexItem(dexItem.getApiDexName());
+                if (dexEntries.isEmpty()) {
+                    throw new RuntimeException("No dex entries found");
+                }
 
-            if (dexResponse.statusCode() != 200) {
-                throw new IOException(
-                        dexResponse.statusCode() + ": " + dexResponse.body()
-                                + " on GET " + dexRequestOptions.linkProperty()
-                );
+                int pokemonDigitCount = countDigits(dexEntries.size());
+
+                for (var dexEntry : dexEntries) {
+                    Label dexItemUi = uiService.createDexListItem(pokemonDigitCount, dexEntry);
+                    dexListItems.add(dexItemUi);
+                }
+
+                currentDexName.set("Pok\u00e9dex: " + dexInfo.getUiName());
+
+            } catch (Exception e) {
+                System.err.println("Unable to load from database: " + e.getMessage());
+                System.err.println("Loading from PokeApi instead...");
+
+                var requestOptions = new DexRequestOptions(DexRequestType.DexList, DefaultDexUrl);
+                var dexResponse = httpService.get(requestOptions);
+
+                if (dexResponse.statusCode() != 200) {
+                    throw new IOException(
+                            dexResponse.statusCode() + ": " + dexResponse.body() + " on GET " + DefaultDexUrl
+                    );
+                }
+
+                JSONObject dexInfo = new JSONObject(dexResponse.body());
+                JSONArray dexEntriesJSON = dexInfo.getJSONArray("pokemon_entries");
+
+                int pokemonDigitCount = countDigits(dexEntriesJSON.length());
+
+                for (var dexItemJSON : dexEntriesJSON) {
+                    var dexEntryFromList = jsonParserService.parseDexItemIntoPokemon((JSONObject) dexItemJSON);
+                    dexEntries.add(dexEntryFromList);
+
+                    Label dexItemUi = uiService.createDexListItem(pokemonDigitCount, dexEntryFromList);
+                    dexListItems.add(dexItemUi);
+                }
+
+                currentDexName.set("Pok\u00e9dex: " + DexNameMap.get(dexInfo.getString("name").toLowerCase()));
+            } finally {
+                System.out.println("saving " + dexListItems.size() + " pokemon");
+                currentDexUi.setAll(dexListItems);
+                dexInfoHandler.saveDexList(dexItem.getApiDexName(), dexEntries);
             }
-
-            JSONObject dexInfo = new JSONObject(dexResponse.body());
-            JSONArray dexEntries = dexInfo.getJSONArray("pokemon_entries");
-
-            int pokemonDigitCount = countDigits(dexEntries.length());
-            List<Label> dexListItems = new ArrayList<>();
-            currentDexUi.clear();
-
-            for (var dexItemJSON : dexEntries) {
-                var dexEntryFromList = jsonParserService.parseDexItemIntoPokemon((JSONObject) dexItemJSON);
-                Label dexItemUi = uiService.createDexListItem(pokemonDigitCount, dexEntryFromList);
-                dexListItems.add(dexItemUi);
-            }
-
-            currentDexUi.setAll(dexListItems);
-            currentDexName.set("Pok\u00e9dex: " + DexNameMap.get(dexItem.getApiDexName()));
         } catch (IOException | InterruptedException | URISyntaxException ex) {
             Alert errorAlert = UiService.createErrorAlert("Unable to open Pok\u00e9dex", ex);
             errorAlert.showAndWait();
@@ -117,35 +145,58 @@ public class PokeApiDexService implements DexService {
 
     @Override
     public void loadDefaultDex(ListProperty<Label> currentDexUi, StringProperty currentDexName) {
+        List<Label> dexListItems = new ArrayList<>();
+        List<JsonDexListItem> dexEntries = new ArrayList<>();
+
         try {
-            var requestOptions = new DexRequestOptions(DexRequestType.DexList, DefaultDexUrl);
-            var dexResponse = httpService.get(requestOptions);
+            try {
+                dexEntries = dexInfoHandler.loadDexList(ApiConversionTables.National);
+                JsonDexItem dexInfo = dexInfoHandler.loadDexItem(ApiConversionTables.National);
+                if (dexEntries.isEmpty()) {
+                    throw new RuntimeException("No dex entries found");
+                }
 
-            if (dexResponse.statusCode() != 200) {
-                throw new IOException(
-                        dexResponse.statusCode() + ": " + dexResponse.body() + " on GET " + DefaultDexUrl
-                );
+                int pokemonDigitCount = countDigits(dexEntries.size());
+
+                for (var dexEntry : dexEntries) {
+                    Label dexItemUi = uiService.createDexListItem(pokemonDigitCount, dexEntry);
+                    dexListItems.add(dexItemUi);
+                }
+
+                currentDexName.set("Pok\u00e9dex: " + dexInfo.getUiName());
+
+            } catch (Exception e) {
+                System.err.println("Unable to load from database: " + e.getMessage());
+                System.err.println("Loading from PokeApi instead...");
+
+                var requestOptions = new DexRequestOptions(DexRequestType.DexList, DefaultDexUrl);
+                var dexResponse = httpService.get(requestOptions);
+
+                if (dexResponse.statusCode() != 200) {
+                    throw new IOException(
+                            dexResponse.statusCode() + ": " + dexResponse.body() + " on GET " + DefaultDexUrl
+                    );
+                }
+
+                JSONObject dexInfo = new JSONObject(dexResponse.body());
+                JSONArray dexEntriesJSON = dexInfo.getJSONArray("pokemon_entries");
+
+                int pokemonDigitCount = countDigits(dexEntriesJSON.length());
+
+                for (var dexItemJSON : dexEntriesJSON) {
+                    var dexEntryFromList = jsonParserService.parseDexItemIntoPokemon((JSONObject) dexItemJSON);
+                    dexEntries.add(dexEntryFromList);
+
+                    Label dexItemUi = uiService.createDexListItem(pokemonDigitCount, dexEntryFromList);
+                    dexListItems.add(dexItemUi);
+                }
+
+                currentDexName.set("Pok\u00e9dex: " + DexNameMap.get(dexInfo.getString("name").toLowerCase()));
+            } finally {
+                currentDexUi.setAll(dexListItems);
+                dexInfoHandler.saveNatDexList(dexEntries);
+                dexInfoHandler.saveDexList(ApiConversionTables.National, dexEntries);
             }
-
-            JSONObject dexInfo = new JSONObject(dexResponse.body());
-            JSONArray dexEntries = dexInfo.getJSONArray("pokemon_entries");
-
-            int pokemonDigitCount = countDigits(dexEntries.length());
-            List<Label> dexListItems = new ArrayList<>();
-            List<JsonDexListItem> dexEntriesFromList = new ArrayList<>();
-            currentDexUi.clear();
-
-            for (var dexItemJSON : dexEntries) {
-                var dexEntryFromList = jsonParserService.parseDexItemIntoPokemon((JSONObject) dexItemJSON);
-                dexEntriesFromList.add(dexEntryFromList);
-
-                Label dexItemUi = uiService.createDexListItem(pokemonDigitCount, dexEntryFromList);
-                dexListItems.add(dexItemUi);
-            }
-
-            currentDexUi.setAll(dexListItems);
-            currentDexName.set("Pok\u00e9dex: " + DexNameMap.get(dexInfo.getString("name").toLowerCase()));
-            dexInfoHandler.saveDexPokemon(dexEntriesFromList);
         } catch (IOException | InterruptedException | URISyntaxException ex) {
             Alert errorAlert = UiService.createErrorAlert("Unable to open Pok\u00e9dex", ex);
             errorAlert.showAndWait();

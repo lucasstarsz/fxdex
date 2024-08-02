@@ -1,6 +1,7 @@
 package io.github.lucasstarsz.fxdex.service;
 
 import io.github.lucasstarsz.fxdex.model.JsonDexEntryItem;
+import io.github.lucasstarsz.fxdex.model.JsonDexItem;
 import io.github.lucasstarsz.fxdex.model.JsonDexListItem;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.StringProperty;
@@ -21,8 +22,12 @@ public interface UiService {
     Insets InfoInsets = new Insets(0, 0, 5, 0);
     MenuItem NoDexesAvailable = new MenuItem("No Pokédex is loaded.");
 
-    List<MenuItem> createDexItems(JSONObject dexListJSON, ListProperty<Label> currentDexUi,
+    List<MenuItem> createDexItems(List<JsonDexItem> jsonDexItems, ListProperty<Label> currentDexUi,
                                   StringProperty currentDexName, DexService dexService);
+
+    List<MenuItem> createDexItems(JSONObject dexListJSON, ListProperty<Label> currentDexUi,
+                                          StringProperty currentDexName, DexService dexService);
+            
 
     Label createDexListItem(int pokemonDigitCount, JsonDexListItem dexEntryFromList);
 

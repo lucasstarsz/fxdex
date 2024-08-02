@@ -1,9 +1,10 @@
 package io.github.lucasstarsz.fxdex.vmodel;
 
 public enum QueryType {
-    SaveDexToName("dexPokemon", "nationalDexNumber", "nationalDexNumber", "apiDexName"),
-    SaveNameToDex("pokemonNamesToDex", "apiDexName", "apiDexName", "nationalDexNumber"),
-    SaveDexItems("dexes", "apiName", "apiName", "uiName", "apiUrl");
+    SaveDexToName("natDexToName", "nationalDexNumber", "nationalDexNumber", "apiMonName"),
+    SaveNameToDex("nameToNatDex", "apiMonName", "apiMonName", "nationalDexNumber"),
+    SaveDexList("pokemonByDex", "apiDexName, apiMonName", "apiDexName", "apiMonName", "dexNumber"),
+    SaveDexItems("dexes", "apiDexName", "apiDexName", "uiName", "apiUrl");
 
     final String databaseName;
     final String primaryKey;

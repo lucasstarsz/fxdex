@@ -20,6 +20,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static io.github.lucasstarsz.fxdex.misc.ApiConversionTables.DexNameMap;
 
@@ -38,12 +39,18 @@ public class DefaultUIService implements UiService {
     public List<MenuItem> createDexItems(JSONObject dexListJSON, ListProperty<Label> currentDexUi,
                                          StringProperty currentDexName, DexService dexService) {
         var jsonDexItems = jsonParserService.parseDexItems(dexListJSON);
-        dexInfoHandler.saveDexItems(jsonDexItems);
+        return createDexItems(jsonDexItems, currentDexUi, currentDexName, dexService);
+    }
+
+    @Override
+    public List<MenuItem> createDexItems(List<JsonDexItem> jsonDexItems, ListProperty<Label> currentDexUi,
+                                         StringProperty currentDexName, DexService dexService) {
+        dexInfoHandler.saveDexMenuList(jsonDexItems);
 
         List<MenuItem> itemUiList = new ArrayList<>();
         for (JsonDexItem item : jsonDexItems) {
-            String apiDexName = item.getApiDexName();
-            String uiDexName = DexNameMap.get(apiDexName);
+            String apiMonName = item.getApiDexName();
+            String uiDexName = Objects.requireNonNullElse(item.getUiName(), DexNameMap.get(apiMonName));
 
             MenuItem dexItem = new MenuItem(uiDexName);
             dexItem.setOnAction((event) -> dexService.loadDexList(
