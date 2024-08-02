@@ -19,7 +19,6 @@ plugins {
     application
     id("org.openjfx.javafxplugin") version "0.1.0"
     id("org.beryx.jlink") version "3.0.1"
-    id("com.gluonhq.gluonfx-gradle-plugin") version "1.0.23"
 }
 
 group = "org.lucasstarsz"
@@ -71,8 +70,6 @@ val distributionName = "FXDex ${version}"
 jlink {
     addExtraDependencies("javafx")
     options.addAll("--strip-debug", "--compress", "2", "--no-header-files", "--no-man-pages")
-    
-    
 
     launcher {
         name = distributionName
