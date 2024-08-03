@@ -1,4 +1,4 @@
-package io.github.lucasstarsz.fxdex.database;
+package io.github.lucasstarsz.fxdex.misc;
 
 public class DatabaseSetup {
 

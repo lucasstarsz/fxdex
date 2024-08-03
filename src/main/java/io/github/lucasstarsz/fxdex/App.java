@@ -24,7 +24,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 
 import atlantafx.base.theme.PrimerDark;
-import io.github.lucasstarsz.fxdex.database.DatabaseSetup;
+import io.github.lucasstarsz.fxdex.misc.DatabaseSetup;
 import io.github.lucasstarsz.fxdex.misc.DexModule;
 import io.github.lucasstarsz.fxdex.misc.DexViewModelCache;
 import io.github.lucasstarsz.fxdex.misc.FileLinks;
