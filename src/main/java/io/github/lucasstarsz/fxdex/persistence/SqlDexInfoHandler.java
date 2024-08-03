@@ -137,10 +137,10 @@ public class SqlDexInfoHandler implements DexInfoHandler {
 
             List<JsonDexListItem> dexItems = new ArrayList<>();
             System.out.println("finding...");
-            do {
+            while (result.next()) {
                 System.out.println("found 1");
                 dexItems.add(new JsonDexListItem(result));
-            } while (result.next());
+            }
 
             return dexItems;
         } catch (SQLException e) {
