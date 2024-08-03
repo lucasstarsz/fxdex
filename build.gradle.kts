@@ -22,7 +22,7 @@ plugins {
 }
 
 group = "org.lucasstarsz"
-version = "0.0.4"
+version = "0.0.5"
 
 repositories {
     mavenCentral()
@@ -61,7 +61,7 @@ tasks.named<Test>("test") {
 
 val os: OperatingSystem = DefaultNativePlatform.getCurrentOperatingSystem()
 if (os.isMacOsX) {
-    version = "1.0.4"
+    version = "1.0.5"
 }
 
 // Packaging & Distribution
