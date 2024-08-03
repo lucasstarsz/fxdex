@@ -105,12 +105,12 @@ public class PokeApiDexService implements DexService {
                 System.err.println("Unable to load from database: " + e.getMessage());
                 System.err.println("Loading from PokeApi instead...");
 
-                var requestOptions = new DexRequestOptions(DexRequestType.DexList, DefaultDexUrl);
+                var requestOptions = new DexRequestOptions(DexRequestType.DexList, dexItem.getApiDexUrl());
                 var dexResponse = httpService.get(requestOptions);
 
                 if (dexResponse.statusCode() != 200) {
                     throw new IOException(
-                            dexResponse.statusCode() + ": " + dexResponse.body() + " on GET " + DefaultDexUrl
+                            dexResponse.statusCode() + ": " + dexResponse.body() + " on GET " + dexItem.getApiDexUrl()
                     );
                 }
 
