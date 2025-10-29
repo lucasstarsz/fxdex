@@ -20,11 +20,11 @@ public interface JsonParserService {
     String GenusNotFound = "Genus not found";
 
     default List<JsonDexItem> parseDexItems(JSONObject dexesJSON) {
-        int dexCount = dexesJSON.getInt("count");
-        List<JsonDexItem> dexItems = new ArrayList<>(dexCount);
+        JSONArray jsonDexArray = dexesJSON.getJSONArray("results");
+        List<JsonDexItem> dexItems = new ArrayList<>(jsonDexArray.length());
 
-        for (int i = 0; i < dexCount; i++) {
-            JSONObject dex = dexesJSON.getJSONArray("results").getJSONObject(i);
+        for (int i = 0; i < jsonDexArray.length(); i++) {
+            JSONObject dex = jsonDexArray.getJSONObject(i);
             JsonDexItem dexItem = new JsonDexItem(dex);
             dexItems.add(dexItem);
         }
